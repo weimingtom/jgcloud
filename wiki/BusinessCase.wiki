@@ -1,6 +1,5 @@
 #labels Phase-Design
 <wiki:toc max_depth="1" />
-
 =Introduction=
 This document will give a brief overview of the business case for the jgcloud project.
 
