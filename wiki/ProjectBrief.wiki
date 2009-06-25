@@ -1,4 +1,5 @@
 #summary The project brief.
+#labels Phase-Requirements
 <wiki:toc max_depth="2" />
 =Introduction=
 This document will contain a high level overview of the jgcloud project. It is a "living" document and will be maintained throughout the lifecycle of the project.
@@ -10,7 +11,7 @@ jgcloud (which is meant to stand for the "Java Game Cloud"). It is the brainchil
 The project was created for the purpose of developing a game using Java and JMonkeyEngine. 
 
 ==Objectives==
-Please refer to the BusinessCase objectives.
+Please refer to the BusinessCase objectives (under Reasons).
 
 ==Scope/Exclusions==
 The project will endeavour to produce the following:
@@ -24,8 +25,9 @@ This project is being run as near-as-dammit for nothing. The expense is simply t
 However, there must be some time tolerances introduced and (as much as possible) monitored and controlled to ensure it doesn't just spiral in to a never-ending project. 
 ----
 =Tools=
-Java
-JMonkeyEngine
+Development language: Java (1.6)
+Graphics Engine: JMonkeyEngine (2.0)
 Communication: Skype?
 Demo's: ?? 
-3D Tool(s): Blender? Milkshape? 
+3D Tool(s): Blender? Milkshape?
+----
