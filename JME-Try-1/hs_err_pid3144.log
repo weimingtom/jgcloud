@@ -1,0 +1,208 @@
+#
+# An unexpected error has been detected by Java Runtime Environment:
+#
+#  EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x0249b4dc, pid=3144, tid=600
+#
+# Java VM: Java HotSpot(TM) Client VM (11.3-b02 mixed mode, sharing windows-x86)
+# Problematic frame:
+# J  com.jme.scene.Spatial.updateWorldScale()V
+#
+# If you would like to submit a bug report, please visit:
+#   http://java.sun.com/webapps/bugreport/crash.jsp
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x01399000):  JavaThread "main" [_thread_in_Java, id=600, stack(0x000d0000,0x00120000)]
+
+siginfo: ExceptionCode=0xc0000005, reading address 0x04000050
+
+Registers:
+EAX=0x285cbfd8, EBX=0x2831aa38, ECX=0x24546758, EDX=0x04000000
+ESP=0x0011f6d0, EBP=0x0011f6e8, ESI=0x24548268, EDI=0x00000005
+EIP=0x0249b4dc, EFLAGS=0x00010206
+
+Top of Stack: (sp=0x0011f6d0)
+0x0011f6d0:   00000000 00000000 0011f708 0249baa0
+0x0011f6e0:   24543858 2454dbc8 0011f708 0249f1ac
+0x0011f6f0:   2454b138 00000000 2453fe70 0249c164
+0x0011f700:   24546758 00000001 0011f728 0249b34c
+0x0011f710:   77a4b85e 779a7e70 24f64d70 245480a0
+0x0011f720:   2453fe70 00000000 0011f768 0249aefc
+0x0011f730:   00000000 0011f9e4 0011f768 02322b54
+0x0011f740:   24535520 24548100 24546758 0249b50c 
+
+Instructions: (pc=0x0249b4dc)
+0x0249b4cc:   18 8b 51 54 83 fa 00 0f 84 3d 00 00 00 8b 71 50
+0x0249b4dc:   8b 52 50 3b 06 f3 0f 10 42 08 f3 0f 11 46 08 f3 
+
+
+Stack: [0x000d0000,0x00120000],  sp=0x0011f6d0,  free space=317k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+J  com.jme.scene.Spatial.updateWorldScale()V
+J  com.jme.scene.Spatial.updateWorldVectors(Z)V
+J  com.jme.scene.Spatial.updateWorldVectors()V
+J  com.jme.scene.Spatial.updateWorldData(F)V
+J  com.jme.scene.Spatial.updateGeometricState(FZ)V
+J  com.jme.scene.Node.updateWorldData(F)V
+J  com.jme.scene.Spatial.updateGeometricState(FZ)V
+J  com.jme.scene.Node.updateWorldData(F)V
+J  com.jme.scene.Spatial.updateGeometricState(FZ)V
+J  com.jme.scene.Node.updateWorldData(F)V
+J  com.jme.scene.Spatial.updateGeometricState(FZ)V
+J  com.jme.scene.Node.updateWorldData(F)V
+J  com.jme.scene.Spatial.updateGeometricState(FZ)V
+J  com.jme.scene.Node.updateWorldData(F)V
+J  com.jme.scene.Spatial.updateGeometricState(FZ)V
+J  com.jme.scene.Node.updateWorldData(F)V
+J  com.jme.scene.Spatial.updateGeometricState(FZ)V
+J  com.jme.scene.Node.updateWorldData(F)V
+J  com.jme.scene.Spatial.updateGeometricState(FZ)V
+J  com.jme.scene.Node.updateWorldData(F)V
+J  com.jme.scene.Spatial.updateGeometricState(FZ)V
+J  com.jme.scene.Node.updateWorldData(F)V
+J  com.jme.scene.Spatial.updateGeometricState(FZ)V
+J  com.jme.scene.Node.updateWorldData(F)V
+J  com.jme.scene.Spatial.updateGeometricState(FZ)V
+J  com.jme.scene.Node.updateWorldData(F)V
+J  com.jme.scene.Spatial.updateGeometricState(FZ)V
+J  com.jme.scene.Node.updateWorldData(F)V
+J  com.jme.scene.Spatial.updateGeometricState(FZ)V
+J  com.jme.app.SimpleGame.update(F)V
+J  com.jme.app.BaseGame.start()V
+j  jmetry1.SketchupImport.main([Ljava/lang/String;)V+16
+v  ~StubRoutines::call_stub
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x04599800 JavaThread "D3D Screen Updater" daemon [_thread_blocked, id=3556, stack(0x06df0000,0x06e40000)]
+  0x04403000 JavaThread "AWT-Windows" daemon [_thread_in_native, id=3112, stack(0x04b10000,0x04b60000)]
+  0x043bac00 JavaThread "Java2D Disposer" daemon [_thread_blocked, id=2808, stack(0x04a70000,0x04ac0000)]
+  0x021c0800 JavaThread "Low Memory Detector" daemon [_thread_blocked, id=2416, stack(0x04300000,0x04350000)]
+  0x021ab000 JavaThread "CompilerThread0" daemon [_thread_blocked, id=2928, stack(0x042b0000,0x04300000)]
+  0x021aa800 JavaThread "Attach Listener" daemon [_thread_blocked, id=1708, stack(0x04260000,0x042b0000)]
+  0x0219fc00 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=3340, stack(0x02100000,0x02150000)]
+  0x02195400 JavaThread "Finalizer" daemon [_thread_blocked, id=3376, stack(0x013a0000,0x013f0000)]
+  0x02193c00 JavaThread "Reference Handler" daemon [_thread_blocked, id=3576, stack(0x01310000,0x01360000)]
+=>0x01399000 JavaThread "main" [_thread_in_Java, id=600, stack(0x000d0000,0x00120000)]
+
+Other Threads:
+  0x02192000 VMThread [stack: 0x00bb0000,0x00c00000] [id=2620]
+  0x021c2000 WatcherThread [stack: 0x04350000,0x043a0000] [id=3860]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ def new generation   total 2368K, used 1187K [0x24300000, 0x24590000, 0x247e0000)
+  eden space 2112K,  44% used [0x24300000, 0x243e8fa0, 0x24510000)
+  from space 256K, 100% used [0x24510000, 0x24550000, 0x24550000)
+  to   space 256K,   0% used [0x24550000, 0x24550000, 0x24590000)
+ tenured generation   total 31272K, used 21574K [0x247e0000, 0x2666a000, 0x28300000)
+   the space 31272K,  68% used [0x247e0000, 0x25cf1990, 0x25cf1a00, 0x2666a000)
+ compacting perm gen  total 12288K, used 6965K [0x28300000, 0x28f00000, 0x2c300000)
+   the space 12288K,  56% used [0x28300000, 0x289cd6e0, 0x289cd800, 0x28f00000)
+    ro space 8192K,  67% used [0x2c300000, 0x2c867ea8, 0x2c868000, 0x2cb00000)
+    rw space 12288K,  53% used [0x2cb00000, 0x2d175530, 0x2d175600, 0x2d700000)
+
+Dynamic libraries:
+0x00400000 - 0x00424000 	C:\Program Files\Java\jdk1.6.0_13\bin\java.exe
+0x77960000 - 0x77a87000 	C:\Windows\system32\ntdll.dll
+0x77550000 - 0x7762b000 	C:\Windows\system32\kernel32.dll
+0x76ff0000 - 0x770b6000 	C:\Windows\system32\ADVAPI32.dll
+0x77810000 - 0x778d2000 	C:\Windows\system32\RPCRT4.dll
+0x7c340000 - 0x7c396000 	C:\Program Files\Java\jdk1.6.0_13\jre\bin\msvcr71.dll
+0x6d8b0000 - 0x6db06000 	C:\Program Files\Java\jdk1.6.0_13\jre\bin\client\jvm.dll
+0x776e0000 - 0x7777d000 	C:\Windows\system32\USER32.dll
+0x770f0000 - 0x7713b000 	C:\Windows\system32\GDI32.dll
+0x743d0000 - 0x74402000 	C:\Windows\system32\WINMM.dll
+0x76310000 - 0x763ba000 	C:\Windows\system32\msvcrt.dll
+0x773f0000 - 0x77534000 	C:\Windows\system32\ole32.dll
+0x77650000 - 0x776dd000 	C:\Windows\system32\OLEAUT32.dll
+0x74390000 - 0x743c9000 	C:\Windows\system32\OLEACC.dll
+0x77630000 - 0x7764e000 	C:\Windows\system32\IMM32.DLL
+0x77af0000 - 0x77bb8000 	C:\Windows\system32\MSCTF.dll
+0x76010000 - 0x7603c000 	C:\Windows\system32\apphelp.dll
+0x77540000 - 0x77549000 	C:\Windows\system32\LPK.DLL
+0x772e0000 - 0x7735d000 	C:\Windows\system32\USP10.dll
+0x6c1b0000 - 0x6c1b5000 	C:\Windows\system32\avgrsstx.dll
+0x6d340000 - 0x6d348000 	C:\Program Files\Java\jdk1.6.0_13\jre\bin\hpi.dll
+0x761d0000 - 0x761d7000 	C:\Windows\system32\PSAPI.DLL
+0x6d860000 - 0x6d86c000 	C:\Program Files\Java\jdk1.6.0_13\jre\bin\verify.dll
+0x6d3e0000 - 0x6d3ff000 	C:\Program Files\Java\jdk1.6.0_13\jre\bin\java.dll
+0x6d8a0000 - 0x6d8af000 	C:\Program Files\Java\jdk1.6.0_13\jre\bin\zip.dll
+0x6d0b0000 - 0x6d1fa000 	C:\Program Files\Java\jdk1.6.0_13\jre\bin\awt.dll
+0x713d0000 - 0x71412000 	C:\Windows\system32\WINSPOOL.DRV
+0x74ec0000 - 0x7505e000 	C:\Windows\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_6.0.6001.18000_none_5cdbaa5a083979cc\comctl32.dll
+0x77a90000 - 0x77ae8000 	C:\Windows\system32\SHLWAPI.dll
+0x71260000 - 0x7126c000 	C:\Windows\system32\DWMAPI.DLL
+0x75140000 - 0x7517f000 	C:\Windows\system32\uxtheme.dll
+0x6d2e0000 - 0x6d334000 	C:\Program Files\Java\jdk1.6.0_13\jre\bin\fontmanager.dll
+0x70cf0000 - 0x70eaa000 	C:\Windows\system32\d3d9.dll
+0x75800000 - 0x75808000 	C:\Windows\system32\VERSION.dll
+0x70ce0000 - 0x70ce6000 	C:\Windows\system32\d3d8thk.dll
+0x10000000 - 0x104e2000 	C:\Windows\system32\nvd3dum.dll
+0x76490000 - 0x76fa0000 	C:\Windows\system32\shell32.dll
+0x07090000 - 0x070e7000 	C:\Users\Richard\Documents\NetBeansProjects\JME-Try-1\lib\natives\lwjgl.dll
+0x6deb0000 - 0x6df7b000 	C:\Windows\system32\OPENGL32.dll
+0x6e870000 - 0x6e893000 	C:\Windows\system32\GLU32.dll
+0x6ddc0000 - 0x6dea5000 	C:\Windows\system32\DDRAW.dll
+0x708c0000 - 0x708c6000 	C:\Windows\system32\DCIMAN32.dll
+0x77140000 - 0x772ca000 	C:\Windows\system32\SETUPAPI.dll
+0x6d6c0000 - 0x6d6d3000 	C:\Program Files\Java\jdk1.6.0_13\jre\bin\net.dll
+0x770c0000 - 0x770ed000 	C:\Windows\system32\WS2_32.dll
+0x773e0000 - 0x773e6000 	C:\Windows\system32\NSI.dll
+0x75790000 - 0x757cb000 	C:\Windows\system32\mswsock.dll
+0x757f0000 - 0x757f5000 	C:\Windows\System32\wship6.dll
+0x6d6e0000 - 0x6d6e9000 	C:\Program Files\Java\jdk1.6.0_13\jre\bin\nio.dll
+0x709c0000 - 0x709c6000 	C:\Windows\system32\IconCodecService.dll
+0x74130000 - 0x741e3000 	C:\Windows\system32\WindowsCodecs.dll
+0x69500000 - 0x69b98000 	C:\Windows\system32\nvoglv32.dll
+0x75510000 - 0x7554b000 	C:\Windows\system32\rsaenh.dll
+0x76090000 - 0x760ae000 	C:\Windows\system32\USERENV.dll
+0x76070000 - 0x76084000 	C:\Windows\system32\Secur32.dll
+0x752a0000 - 0x752af000 	C:\Windows\system32\NLAapi.dll
+0x759e0000 - 0x759f9000 	C:\Windows\system32\IPHLPAPI.DLL
+0x759a0000 - 0x759d5000 	C:\Windows\system32\dhcpcsvc.DLL
+0x75c30000 - 0x75c5c000 	C:\Windows\system32\DNSAPI.dll
+0x75990000 - 0x75997000 	C:\Windows\system32\WINNSI.DLL
+0x75960000 - 0x75981000 	C:\Windows\system32\dhcpcsvc6.DLL
+0x719c0000 - 0x719cf000 	C:\Windows\system32\napinsp.dll
+0x71950000 - 0x71962000 	C:\Windows\system32\pnrpnsp.dll
+0x719b0000 - 0x719b8000 	C:\Windows\System32\winrnr.dll
+0x76fa0000 - 0x76fea000 	C:\Windows\system32\WLDAP32.dll
+0x71980000 - 0x7198c000 	C:\Windows\system32\wshbth.dll
+0x75450000 - 0x75455000 	C:\Windows\System32\wshtcpip.dll
+0x71970000 - 0x71976000 	C:\Windows\system32\rasadhlp.dll
+0x6d500000 - 0x6d524000 	C:\Program Files\Java\jdk1.6.0_13\jre\bin\jpeg.dll
+0x6d220000 - 0x6d24f000 	C:\Program Files\Java\jdk1.6.0_13\jre\bin\cmm.dll
+
+VM Arguments:
+jvm_args: -Djava.library.path=lib/natives 
+java_command: jmetry1.SketchupImport
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+PATH=C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Panda3D-1.6.1\python;C:\Panda3D-1.6.1\bin
+USERNAME=Richard
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=x86 Family 6 Model 15 Stepping 10, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows Vista Build 6001 Service Pack 1
+
+CPU:total 2 (2 cores per cpu, 1 threads per core) family 6 model 15 stepping 10, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3
+
+Memory: 4k page, physical 2094792k(926136k free), swap 4194303k(2969092k free)
+
+vm_info: Java HotSpot(TM) Client VM (11.3-b02) for windows-x86 JRE (1.6.0_13-b03), built on Mar  9 2009 01:15:24 by "java_re" with MS VC++ 7.1
+
+time: Sun Jun 07 09:22:21 2009
+elapsed time: 101 seconds
+
