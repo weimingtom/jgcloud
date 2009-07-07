@@ -11,12 +11,15 @@ jgcloud (which is meant to stand for the "Java Game Cloud"). It is the brainchil
 The project was created for the purpose of developing a game using Java and JMonkeyEngine. 
 
 ==Objectives==
-Please refer to the BusinessCase objectives (under Reasons).
+Please refer to the BusinessCase objectives.
 
 ==Scope/Exclusions==
 The project will endeavour to produce the following:
 
-  * A quorum of keen and talented developers, artists (computer graphic artists), and sound engineers (if that is the correct term) who want to create a computer game.
+  * A quorum of keen and talented developers
+
+
+, artists (computer graphic artists), and sound engineers (if that is the correct term) who want to create a computer game.
   * Once the level of technical expertise has been achieved (the first stage), a game will be devised taking input from all team members. The game should be large enough to be a challenge, but not so large as to make it impossible to write. For instance, it is highly unlikely an MMO will be used.
 ----
 =Tolerances=
