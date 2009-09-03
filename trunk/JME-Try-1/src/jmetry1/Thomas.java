@@ -23,7 +23,6 @@ import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
-import com.jme.util.export.JMEExporter;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.converters.FormatConverter;
 import com.jmex.model.converters.ObjToJme;
