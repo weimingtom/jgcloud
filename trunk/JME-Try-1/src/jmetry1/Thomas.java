@@ -31,6 +31,10 @@ import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.util.MidPointHeightMap;
 import java.io.File;
 
+/**
+ * TO-DO: Get this to work from a GoogleCode download!
+ * @author Richard Hawkes
+ */
 public class Thomas extends SimpleGame {
 
     private Spatial map;
