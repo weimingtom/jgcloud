@@ -32,6 +32,7 @@ import java.io.File;
 
 /**
  * TO-DO: Get this to work from a GoogleCode download!
+ *
  * @author Richard Hawkes
  */
 public class Thomas extends SimpleGame {
@@ -69,6 +70,7 @@ public class Thomas extends SimpleGame {
             map = (Spatial) BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
             map.setLocalScale(4f);
 
+            // Dimwite... This needs to be local!!
             File file1 = new File("C:\\Users\\Richard\\Pictures\\Thomas\\CIMG1318.jpg");
             Texture texture1 = TextureManager.loadTexture(file1.toURI().toURL(), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
             TextureState ts1 = display.getRenderer().createTextureState();
