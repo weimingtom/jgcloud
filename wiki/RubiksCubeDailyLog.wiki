@@ -1,3 +1,4 @@
+#labels Rubiks-Demo
 =Day 1=
 Created 7 spheres to illustrate the inner pivots of the Rubiks Cube (CorePivotsTutorial). In reality, I will just create dummy nodes as they don't need to be seen.
 
