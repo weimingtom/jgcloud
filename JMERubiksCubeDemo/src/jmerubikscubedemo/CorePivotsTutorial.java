@@ -1,6 +1,11 @@
 package jmerubikscubedemo;
 
 import com.jme.app.SimpleGame;
+import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
+import com.jme.scene.Node;
+import com.jme.scene.shape.Cylinder;
 import com.jme.scene.shape.Sphere;
 
 /**
@@ -14,7 +19,10 @@ import com.jme.scene.shape.Sphere;
  * @author Richard Hawkes (2009)
  */
 public class CorePivotsTutorial extends SimpleGame {
-    private Sphere centrePivot, frontPivot, rearPivot, topPivot, bottomPivot, leftPivot, rightPivot;
+
+    private Sphere centrePivot,  frontPivot,  rearPivot,  topPivot,  bottomPivot,  leftPivot,  rightPivot;
+    private static float OBJECT_SIZE = 50.0F;
+    private static int DEFAULT_SAMPLES = 10;
 
     public static void main(String[] args) {
         CorePivotsTutorial tutorial1 = new CorePivotsTutorial();
@@ -25,6 +33,7 @@ public class CorePivotsTutorial extends SimpleGame {
     @Override
     protected void simpleInitGame() {
         createPivots();
+        createCylinders();
     }
 
     /**
@@ -34,32 +43,73 @@ public class CorePivotsTutorial extends SimpleGame {
      * Rubiks cube!
      */
     private void createPivots() {
-        centrePivot = new Sphere("Centre", 20, 20, 5);
-        centrePivot.setLocalTranslation(0, 0, 0);
-        rootNode.attachChild(centrePivot);
+        Node pivotNodes = new Node("pivots");
 
-        frontPivot = new Sphere("Front", 20, 20, 5);
-        centrePivot.setLocalTranslation(0, 0, -50); // Z is negative because z decreases as you go in to the distance!!
-        rootNode.attachChild(frontPivot);
+        centrePivot = new Sphere("centre", DEFAULT_SAMPLES, DEFAULT_SAMPLES, 5);
+        pivotNodes.attachChild(centrePivot);
 
-        rearPivot = new Sphere("Rear", 20, 20, 5);
-        rearPivot.setLocalTranslation(0, 0, 50);
-        rootNode.attachChild(rearPivot);
+        frontPivot = new Sphere("front", DEFAULT_SAMPLES, DEFAULT_SAMPLES, 5);
+        frontPivot.setLocalTranslation(0, 0, 0 - OBJECT_SIZE);
+        pivotNodes.attachChild(frontPivot);
 
-        topPivot = new Sphere("Top", 20, 20, 5);
-        topPivot.setLocalTranslation(0, 50, 0);
-        rootNode.attachChild(topPivot);
+        rearPivot = new Sphere("rear", DEFAULT_SAMPLES, DEFAULT_SAMPLES, 5);
+        rearPivot.setLocalTranslation(0, 0, OBJECT_SIZE);
+        pivotNodes.attachChild(rearPivot);
 
-        bottomPivot = new Sphere("Bottom", 20, 20, 5);
-        bottomPivot.setLocalTranslation(0, -50, 0);
-        rootNode.attachChild(bottomPivot);
+        leftPivot = new Sphere("left", DEFAULT_SAMPLES, DEFAULT_SAMPLES, 5);
+        leftPivot.setLocalTranslation(0 - OBJECT_SIZE, 0, 0);
+        pivotNodes.attachChild(leftPivot);
 
-        leftPivot = new Sphere("Left", 20, 20, 5);
-        leftPivot.setLocalTranslation(-50, 0, 0);
-        rootNode.attachChild(leftPivot);
+        rightPivot = new Sphere("right", DEFAULT_SAMPLES, DEFAULT_SAMPLES, 5);
+        rightPivot.setLocalTranslation(OBJECT_SIZE, 0, 0);
+        pivotNodes.attachChild(rightPivot);
 
-        rightPivot = new Sphere("Right", 20, 20, 5);
-        rightPivot.setLocalTranslation(50, 0, 0);
-        rootNode.attachChild(rightPivot);
+        topPivot = new Sphere("top", DEFAULT_SAMPLES, DEFAULT_SAMPLES, 5);
+        topPivot.setLocalTranslation(0, OBJECT_SIZE, 0);
+        pivotNodes.attachChild(topPivot);
+
+        bottomPivot = new Sphere("bottom", DEFAULT_SAMPLES, DEFAULT_SAMPLES, 5);
+        bottomPivot.setLocalTranslation(0, 0 - OBJECT_SIZE, 0);
+        pivotNodes.attachChild(bottomPivot);
+
+        rootNode.attachChild(pivotNodes);
+    }
+
+    private void createCylinders() {
+        Node cylinderNodes = new Node("Cylinders");
+
+        Cylinder c1 = new Cylinder("C1", DEFAULT_SAMPLES, DEFAULT_SAMPLES, 1, OBJECT_SIZE);
+        Quaternion q1 = new Quaternion();
+        q1.fromAngleAxis(FastMath.PI / 2, new Vector3f(1, 0, 0));
+        c1.setLocalRotation(q1);
+        c1.setLocalTranslation(0, OBJECT_SIZE/2, 0);
+        cylinderNodes.attachChild(c1);
+
+        Cylinder c2 = new Cylinder("C2", DEFAULT_SAMPLES, DEFAULT_SAMPLES, 1, OBJECT_SIZE);
+        c2.setLocalRotation(q1);
+        c2.setLocalTranslation(0, 0-(OBJECT_SIZE/2), 0);
+        cylinderNodes.attachChild(c2);
+
+        Cylinder c3 = new Cylinder("C3", DEFAULT_SAMPLES, DEFAULT_SAMPLES, 1, OBJECT_SIZE);
+        c3.setLocalTranslation(0, 0, 0-(OBJECT_SIZE/2));
+        cylinderNodes.attachChild(c3);
+
+        Cylinder c4 = new Cylinder("C4", DEFAULT_SAMPLES, DEFAULT_SAMPLES, 1, OBJECT_SIZE);
+        c4.setLocalTranslation(0, 0, OBJECT_SIZE/2);
+        cylinderNodes.attachChild(c4);
+
+        Cylinder c5 = new Cylinder("C5", DEFAULT_SAMPLES, DEFAULT_SAMPLES, 1, OBJECT_SIZE);
+        Quaternion q2 = new Quaternion();
+        q2.fromAngleAxis(FastMath.PI / 2, new Vector3f(0, 1, 0));
+        c5.setLocalRotation(q2);
+        c5.setLocalTranslation(0-(OBJECT_SIZE/2), 0, 0);
+        cylinderNodes.attachChild(c5);
+
+        Cylinder c6 = new Cylinder("C6", DEFAULT_SAMPLES, DEFAULT_SAMPLES, 1, OBJECT_SIZE);
+        c6.setLocalRotation(q2);
+        c6.setLocalTranslation(OBJECT_SIZE/2, 0, 0);
+        cylinderNodes.attachChild(c6);
+
+        rootNode.attachChild(cylinderNodes);
     }
 }
