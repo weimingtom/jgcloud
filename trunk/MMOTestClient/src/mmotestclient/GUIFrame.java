@@ -10,8 +10,9 @@
  */
 package mmotestclient;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.Point;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JFrame;
 
 /**
@@ -156,5 +157,9 @@ public class GUIFrame extends JFrame implements ClientInspector {
 
     public int getYPos() {
         return ((GUICanvas) canvas1).getYPos();
+    }
+
+    public void updatePlayerLocation(String player, int xPos, int yPos) {
+        ((GUICanvas)canvas1).remotePlayerLocations.put(player, new Point(xPos, yPos));
     }
 }
