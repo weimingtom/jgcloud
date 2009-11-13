@@ -7,10 +7,10 @@ package mmotestclient;
 import java.awt.Canvas;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -21,22 +21,29 @@ public class GUICanvas extends Canvas {
     private int xPos = 50;
     private int yPos = 50;
     private List<Point> squares = new ArrayList<Point>();
+    public Map<String,Point> remotePlayerLocations = new HashMap<String,Point>();
 
     public GUICanvas() {
         squares.add(new Point(xPos, yPos));
     }
+
     private int moveDistance = 12;
     private int squareSize = 10;
 
     public void paint(Graphics g) {
         super.paint(g);
 
-        for (Point p : squares) {
-            g.drawRect(p.x, p.y, squareSize, squareSize);
-        }
+//        for (Point p : squares) {
+//            g.drawRect(p.x, p.y, squareSize, squareSize);
+//        }
 
         Point lastSquare = squares.get(squares.size() - 1);
         g.fillRect(lastSquare.x, lastSquare.y, squareSize, squareSize);
+
+        for (String remotePlayer : remotePlayerLocations.keySet()) {
+            Point location = remotePlayerLocations.get(remotePlayer);
+            g.fillRect((int)location.getX(), (int)location.getY(), squareSize, squareSize);
+        }
     }
 
     public void moveUp() {
