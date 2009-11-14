@@ -25,6 +25,19 @@ public class GUICanvas extends Canvas {
 
     public GUICanvas() {
         squares.add(new Point(xPos, yPos));
+
+        new Thread(new Runnable() {
+            public void run() {
+               while (true) {
+                    try {
+                        Thread.sleep(50);
+                        repaint();
+                    } catch(Exception ex) {
+
+                    }
+                }
+            }
+        }).start();
     }
 
     private int moveDistance = 12;
@@ -49,25 +62,25 @@ public class GUICanvas extends Canvas {
     public void moveUp() {
         yPos -= moveDistance;
         squares.add(new Point(xPos, yPos));
-        repaint();
+//        repaint();
     }
 
     public void moveDown() {
         yPos += moveDistance;
         squares.add(new Point(xPos, yPos));
-        repaint();
+//        repaint();
     }
 
     public void moveLeft() {
         xPos -= moveDistance;
         squares.add(new Point(xPos, yPos));
-        repaint();
+//        repaint();
     }
 
     public void moveRight() {
         xPos += moveDistance;
         squares.add(new Point(xPos, yPos));
-        repaint();
+//        repaint();
     }
 
     /**

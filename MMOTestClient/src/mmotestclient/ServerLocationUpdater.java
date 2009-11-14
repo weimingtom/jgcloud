@@ -60,7 +60,7 @@ public class ServerLocationUpdater implements Runnable, SimpleClientListener {
 
     public void run() {
         while (true) {
-            logger.log(Level.INFO, "x=" + clientInspector.getXPos() + " y=" + clientInspector.getYPos());
+            logger.fine("x=" + clientInspector.getXPos() + " y=" + clientInspector.getYPos());
 
             try {
                 if (clientLoggedIn && clientChannel != null) {
@@ -72,7 +72,7 @@ public class ServerLocationUpdater implements Runnable, SimpleClientListener {
                 clientLoggedIn = false;
             }
             
-            try { Thread.sleep(2000); } catch (Exception ex) { }
+            try { Thread.sleep(50); } catch (Exception ex) { }
         }
     }
 
@@ -137,12 +137,12 @@ public class ServerLocationUpdater implements Runnable, SimpleClientListener {
     }
 
     /**
-     * Yep, this is called when a message is sent by the server ;)
+     * Yep, this is called when a message is sent directly by the server ;)
      *
      * @param message The message sent.
      */
     public void receivedMessage(ByteBuffer message) {
-        logger.info("Received message from server: " + message);
+        logger.fine("Received message from server: " + message);
     }
 
     /**
