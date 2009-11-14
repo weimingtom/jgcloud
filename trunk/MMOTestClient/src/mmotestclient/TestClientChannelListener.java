@@ -31,7 +31,7 @@ public class TestClientChannelListener implements ClientChannelListener {
 
     public void receivedMessage(ClientChannel cc, ByteBuffer message) {
         String decodedMessage = decodeMessage(message);
-        logger.info("Received message! " + decodedMessage);
+        logger.fine("Received message! " + decodedMessage);
 
         String[] fields = decodedMessage.split(",");
         String player = fields[0].trim();
