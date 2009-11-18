@@ -6,6 +6,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
+import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
@@ -34,6 +35,7 @@ public class MainClient extends SimpleGame {
     @Override
     protected void simpleInitGame() {
         createArena();
+        createPlayer();
     }
 
     private void createArena() {
@@ -90,5 +92,10 @@ public class MainClient extends SimpleGame {
         rightWall.setLocalTranslation((FLOOR_WIDTH/2), WALL_HEIGHT/2, 0);
 
         rootNode.attachChild(walls);
+    }
+
+    private void createPlayer() {
+        Box b = new Box("Player", new Vector3f(0.0F, 5F, 0.0F), 5, 5, 5);
+        rootNode.attachChild(b);
     }
 }
