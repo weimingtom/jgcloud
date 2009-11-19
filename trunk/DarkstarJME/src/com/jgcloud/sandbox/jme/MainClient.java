@@ -38,7 +38,6 @@ public class MainClient extends BasicGameState {
     private int WALL_HEIGHT = 10;
 
     private Node myTank;
-    private Node walls;
     private Camera cam;
     private ChaseCamera chaseCamera;
     private Skybox skybox;
@@ -102,7 +101,7 @@ public class MainClient extends BasicGameState {
 
         rootNode.attachChild(floor);
         
-        walls = new Node("Walls");
+        Node walls = new Node("Walls");
 
         //load a texture for the walls
         TextureState wallTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
