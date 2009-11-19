@@ -17,6 +17,8 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.GameTaskQueue;
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.game.StandardGame;
 import com.jmex.game.state.BasicGameState;
@@ -63,6 +65,9 @@ public class TankGameState extends BasicGameState {
 
 
     protected void init() {
+        // Set it so that each "execute" statement only executes one task...
+        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).setExecuteAll(false);
+
         createArena();
 
         myTank = createPlayer();
@@ -187,10 +192,11 @@ public class TankGameState extends BasicGameState {
     @Override
     public void update(float tpf) {
         super.update(tpf);
+        
+        // Execute any tasks on the queue...
+        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
 
-        if (chaseCamera != null) {
-            chaseCamera.update(tpf);
-        }
+        chaseCamera.update(tpf);
 
         //we want to keep the skybox around our eyes, so move it with the camera.
         skybox.setLocalTranslation(cam.getLocation());
