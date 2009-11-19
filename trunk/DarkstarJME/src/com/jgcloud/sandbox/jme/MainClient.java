@@ -37,7 +37,7 @@ public class MainClient extends BasicGameState {
     private int FLOOR_HEIGHT = 400;
     private int WALL_HEIGHT = 10;
 
-    private Node tank;
+    private Node myTank;
     private Node walls;
     private Camera cam;
     private ChaseCamera chaseCamera;
@@ -65,7 +65,10 @@ public class MainClient extends BasicGameState {
 
     protected void init() {
         createArena();
-        createPlayer();
+
+        myTank = createPlayer();
+        getRootNode().attachChild(myTank);
+
         createChaseCamera();
         createSkybox();
         createLighting();
@@ -143,17 +146,23 @@ public class MainClient extends BasicGameState {
         rootNode.attachChild(walls);
     }
 
-    private void createPlayer() {
-        tank = new Node("Tank");
+    /**
+     * Returns a tank node. Although this is meant for the player on this
+     * computer, it can also be used to create a remote player as well.
+     *
+     * @return A tank node
+     */
+    private Node createPlayer() {
+        Node tank = new Node("Tank");
 
-        //load a texture for the tank
+        //load a texture for the myTank
         TextureState tankTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         Texture tankTexture = TextureManager.loadTexture(MainClient.class.getClassLoader().getResource("images/tanktexture.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
 
         tankTextureState.setTexture(tankTexture);
         tank.setRenderState(tankTextureState);
 
-        // Create a simple box that will be our tank
+        // Create a simple box that will be our myTank
         Box tankBox = new Box("TankBox", new Vector3f(0.0F, 5F, 0.0F), 5, 5, 5);
         tank.attachChild(tankBox);
 
@@ -172,7 +181,7 @@ public class MainClient extends BasicGameState {
         tank.updateModelBound();
         tank.updateWorldBound();
 
-        rootNode.attachChild(tank);
+        return tank;
     }
 
 
@@ -192,8 +201,8 @@ public class MainClient extends BasicGameState {
     private void createChaseCamera() {
         Vector3f targetOffset = new Vector3f();
 
-        targetOffset.y = ((BoundingBox)tank.getWorldBound()).yExtent * 3F;
-        targetOffset.z = ((BoundingBox)tank.getWorldBound()).zExtent * 1F;
+        targetOffset.y = ((BoundingBox)myTank.getWorldBound()).yExtent * 3F;
+        targetOffset.z = ((BoundingBox)myTank.getWorldBound()).zExtent * 1F;
 
         HashMap props = new HashMap();
 //        props.put(ThirdPersonMouseLook.PROP_MAXROLLOUT, "10");
@@ -202,7 +211,7 @@ public class MainClient extends BasicGameState {
 //        props.put(ThirdPersonMouseLook.PROP_MAXASCENT, ""+(45*FastMath.DEG_TO_RAD));
 //        props.put(ChaseCamera.PROP_INITIALSPHERECOORDS, new Vector3f(5, 0, 30 * FastMath.DEG_TO_RAD));
 //        props.put(ChaseCamera.PROP_TARGETOFFSET, targetOffset);
-        chaseCamera = new ChaseCamera(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), tank, props);
+        chaseCamera = new ChaseCamera(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), myTank, props);
 //        chaseCamera.setMaxDistance(10);
 //        chaseCamera.setMinDistance(6);
     }
@@ -238,6 +247,6 @@ public class MainClient extends BasicGameState {
     }
 
     private void addController() {
-        getRootNode().addController(new TankController(tank));
+        getRootNode().addController(new TankController(myTank));
     }
 }
