@@ -71,4 +71,10 @@
     nbproject/build-impl.xml file. 
 
     -->
+
+<!--
+    <target name="-post-init">
+        <zip destfile="lib/images.zip" basedir="images" prefix="images"/>
+    </target>
+-->
 </project>
