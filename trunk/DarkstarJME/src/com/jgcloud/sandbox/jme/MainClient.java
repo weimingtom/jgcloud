@@ -1,19 +1,27 @@
 package com.jgcloud.sandbox.jme;
 
-import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.ChaseCamera;
-import com.jme.input.thirdperson.ThirdPersonMouseLook;
+import com.jme.light.PointLight;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.renderer.Camera;
+import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
+import com.jme.scene.Skybox;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Capsule;
 import com.jme.scene.shape.Quad;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
+import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
+import com.jmex.game.StandardGame;
+import com.jmex.game.state.BasicGameState;
+import com.jmex.game.state.GameState;
+import com.jmex.game.state.GameStateManager;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -22,7 +30,7 @@ import java.util.logging.Logger;
  *
  * @author Richard Hawkes
  */
-public class MainClient extends SimpleGame {
+public class MainClient extends BasicGameState {
     private static final Logger logger = Logger.getLogger(MainClient.class.getName());
 
     private int FLOOR_WIDTH = 200;
@@ -30,21 +38,40 @@ public class MainClient extends SimpleGame {
     private int WALL_HEIGHT = 10;
 
     private Node tank;
-    ChaseCamera chaseCamera;
+    private Node walls;
+    private Camera cam;
+    private ChaseCamera chaseCamera;
+    private Skybox skybox;
+    private static StandardGame standardGame;
 
     public static void main(String[] args) {
-        MainClient client = new MainClient();
-//        client.samples = 4;
+        standardGame = new StandardGame("GameControl", StandardGame.GameType.GRAPHICAL, null);
+        standardGame.getSettings().setSamples(8);
+        standardGame.start();
 
-        client.setConfigShowMode(ConfigShowMode.AlwaysShow);
-        client.start();
+        GameState client = new MainClient();
+        GameStateManager.getInstance().attachChild(client);
+        client.setActive(true);
     }
 
-    @Override
-    protected void simpleInitGame() {
+
+    public MainClient() {
+        super("Main Client");
+
+        cam = DisplaySystem.getDisplaySystem().getRenderer().getCamera();
+        init();
+    }
+
+
+    protected void init() {
         createArena();
         createPlayer();
         createChaseCamera();
+        createSkybox();
+        createLighting();
+        addController();
+        
+        getRootNode().updateRenderState();
     }
 
     private void createArena() {
@@ -61,7 +88,7 @@ public class MainClient extends SimpleGame {
         floor.setLocalRotation(pitch90);
 
         //load a texture for the floor
-        TextureState floorTextureState = display.getRenderer().createTextureState();
+        TextureState floorTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         Texture floorTexture = TextureManager.loadTexture(MainClient.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
 
         floorTexture.setWrap(Texture.WrapMode.Repeat);
@@ -72,14 +99,13 @@ public class MainClient extends SimpleGame {
 
         rootNode.attachChild(floor);
         
-        Node walls = new Node("Walls");
+        walls = new Node("Walls");
 
         //load a texture for the walls
-        TextureState wallTextureState = display.getRenderer().createTextureState();
+        TextureState wallTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         Texture wallTexture = TextureManager.loadTexture(MainClient.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
         wallTexture.setWrap(Texture.WrapMode.Repeat);
         wallTexture.setScale(new Vector3f(50,1,0));
-
 
         // By setting the render state on the 'walls' node, all its childre will
         // also use the same texture.
@@ -90,26 +116,30 @@ public class MainClient extends SimpleGame {
         Quad backWall = new Quad("Back Wall", FLOOR_WIDTH, WALL_HEIGHT);
         walls.attachChild(backWall);
         backWall.setLocalTranslation(0, WALL_HEIGHT/2, FLOOR_HEIGHT/2);
+        backWall.setModelBound(new BoundingBox());
+        backWall.updateModelBound();
 
         // The front wall does not need to be rotated. It defaults to vertical.
         Quad frontWall = new Quad("Front Wall", FLOOR_WIDTH, WALL_HEIGHT);
         walls.attachChild(frontWall);
         frontWall.setLocalTranslation(0, WALL_HEIGHT/2, 0 - (FLOOR_HEIGHT/2));
+        frontWall.setModelBound(new BoundingBox());
+        frontWall.updateModelBound();
 
         Quad leftWall = new Quad("Left Wall", FLOOR_HEIGHT, WALL_HEIGHT);
         walls.attachChild(leftWall);
         leftWall.setLocalRotation(yaw90);
         leftWall.setLocalTranslation(0-(FLOOR_WIDTH/2), WALL_HEIGHT/2, 0);
+        leftWall.setModelBound(new BoundingBox());
+        leftWall.updateModelBound();
 
         Quad rightWall = new Quad("Right Wall", FLOOR_HEIGHT, WALL_HEIGHT);
         walls.attachChild(rightWall);
         rightWall.setLocalRotation(yaw90);
         rightWall.setLocalTranslation((FLOOR_WIDTH/2), WALL_HEIGHT/2, 0);
+        rightWall.setModelBound(new BoundingBox());
+        rightWall.updateModelBound();
 
-        // this bounding box is going to screw up collision later I think.
-        walls.setModelBound(new BoundingBox());
-        walls.updateModelBound();
-        
         rootNode.attachChild(walls);
     }
 
@@ -117,7 +147,7 @@ public class MainClient extends SimpleGame {
         tank = new Node("Tank");
 
         //load a texture for the tank
-        TextureState tankTextureState = display.getRenderer().createTextureState();
+        TextureState tankTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         Texture tankTexture = TextureManager.loadTexture(MainClient.class.getClassLoader().getResource("images/tanktexture.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
 
         tankTextureState.setTexture(tankTexture);
@@ -137,33 +167,77 @@ public class MainClient extends SimpleGame {
         tankGun.setLocalTranslation(0, 5, -8);
 
         tank.attachChild(tankGun);
-
         tank.setModelBound(new BoundingBox());
+
         tank.updateModelBound();
         tank.updateWorldBound();
 
         rootNode.attachChild(tank);
     }
 
+
     @Override
-    protected void simpleUpdate() {
-        chaseCamera.update(tpf);
+    public void update(float tpf) {
+        super.update(tpf);
+
+        if (chaseCamera != null) {
+            chaseCamera.update(tpf);
+        }
+
+        //we want to keep the skybox around our eyes, so move it with the camera.
+        skybox.setLocalTranslation(cam.getLocation());
     }
+
 
     private void createChaseCamera() {
         Vector3f targetOffset = new Vector3f();
-        targetOffset.y = ((BoundingBox)tank.getWorldBound()).yExtent * 4F;
-        targetOffset.z = ((BoundingBox)tank.getWorldBound()).zExtent * 2F;
+
+        targetOffset.y = ((BoundingBox)tank.getWorldBound()).yExtent * 3F;
+        targetOffset.z = ((BoundingBox)tank.getWorldBound()).zExtent * 1F;
 
         HashMap props = new HashMap();
-        props.put(ThirdPersonMouseLook.PROP_MAXROLLOUT, "6");
-        props.put(ThirdPersonMouseLook.PROP_MINROLLOUT, "3");
+//        props.put(ThirdPersonMouseLook.PROP_MAXROLLOUT, "10");
+//        props.put(ThirdPersonMouseLook.PROP_MINROLLOUT, "2");
         props.put(ChaseCamera.PROP_TARGETOFFSET, targetOffset);
-        props.put(ThirdPersonMouseLook.PROP_MAXASCENT, ""+(45*FastMath.DEG_TO_RAD));
-        props.put(ChaseCamera.PROP_INITIALSPHERECOORDS, new Vector3f(5, 0, 30 * FastMath.DEG_TO_RAD));
-        props.put(ChaseCamera.PROP_TARGETOFFSET, targetOffset);
-        chaseCamera = new ChaseCamera(cam, tank, props);
-        chaseCamera.setMaxDistance(8);
-        chaseCamera.setMinDistance(2);
+//        props.put(ThirdPersonMouseLook.PROP_MAXASCENT, ""+(45*FastMath.DEG_TO_RAD));
+//        props.put(ChaseCamera.PROP_INITIALSPHERECOORDS, new Vector3f(5, 0, 30 * FastMath.DEG_TO_RAD));
+//        props.put(ChaseCamera.PROP_TARGETOFFSET, targetOffset);
+        chaseCamera = new ChaseCamera(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), tank, props);
+//        chaseCamera.setMaxDistance(10);
+//        chaseCamera.setMinDistance(6);
+    }
+
+
+    private void createSkybox() {
+        skybox = new Skybox("skybox", 512, 512, 512);
+
+        Texture skyboxTexture = TextureManager.loadTexture(MainClient.class.getClassLoader().getResource("images/skybox-all.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+
+        skybox.setTexture(Skybox.Face.North, skyboxTexture);
+        skybox.setTexture(Skybox.Face.South, skyboxTexture);
+        skybox.setTexture(Skybox.Face.East, skyboxTexture);
+        skybox.setTexture(Skybox.Face.West, skyboxTexture);
+        skybox.setTexture(Skybox.Face.Up, skyboxTexture);
+        skybox.setTexture(Skybox.Face.Down, skyboxTexture);
+
+        rootNode.attachChild(skybox);
+    }
+
+    private void createLighting() {
+        //Spot on!
+        final PointLight light = new PointLight();
+        light.setDiffuse(new ColorRGBA(0.75f, 0.75f, 0.75f, 0.75f));
+        light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        light.setLocation(new Vector3f(100, 100, 100));
+        light.setEnabled(true);
+
+        final LightState lightState = DisplaySystem.getDisplaySystem().getRenderer().createLightState();
+        lightState.setEnabled(true);
+        lightState.attach(light);
+        getRootNode().setRenderState(lightState);
+    }
+
+    private void addController() {
+        getRootNode().addController(new TankController(tank));
     }
 }
