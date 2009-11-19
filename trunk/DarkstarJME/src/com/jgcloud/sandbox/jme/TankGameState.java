@@ -30,8 +30,8 @@ import java.util.logging.Logger;
  *
  * @author Richard Hawkes
  */
-public class MainClient extends BasicGameState {
-    private static final Logger logger = Logger.getLogger(MainClient.class.getName());
+public class TankGameState extends BasicGameState {
+    private static final Logger logger = Logger.getLogger(TankGameState.class.getName());
 
     private int FLOOR_WIDTH = 200;
     private int FLOOR_HEIGHT = 400;
@@ -48,13 +48,13 @@ public class MainClient extends BasicGameState {
         standardGame.getSettings().setSamples(8);
         standardGame.start();
 
-        GameState client = new MainClient();
+        GameState client = new TankGameState();
         GameStateManager.getInstance().attachChild(client);
         client.setActive(true);
     }
 
 
-    public MainClient() {
+    public TankGameState() {
         super("Main Client");
 
         cam = DisplaySystem.getDisplaySystem().getRenderer().getCamera();
@@ -91,7 +91,7 @@ public class MainClient extends BasicGameState {
 
         //load a texture for the floor
         TextureState floorTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        Texture floorTexture = TextureManager.loadTexture(MainClient.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture floorTexture = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
 
         floorTexture.setWrap(Texture.WrapMode.Repeat);
         floorTexture.setScale(new Vector3f(10,10,10));
@@ -105,7 +105,7 @@ public class MainClient extends BasicGameState {
 
         //load a texture for the walls
         TextureState wallTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        Texture wallTexture = TextureManager.loadTexture(MainClient.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture wallTexture = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
         wallTexture.setWrap(Texture.WrapMode.Repeat);
         wallTexture.setScale(new Vector3f(50,1,0));
 
@@ -156,7 +156,7 @@ public class MainClient extends BasicGameState {
 
         //load a texture for the myTank
         TextureState tankTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        Texture tankTexture = TextureManager.loadTexture(MainClient.class.getClassLoader().getResource("images/tanktexture.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture tankTexture = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/tanktexture.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
 
         tankTextureState.setTexture(tankTexture);
         tank.setRenderState(tankTextureState);
@@ -219,7 +219,7 @@ public class MainClient extends BasicGameState {
     private void createSkybox() {
         skybox = new Skybox("skybox", 512, 512, 512);
 
-        Texture skyboxTexture = TextureManager.loadTexture(MainClient.class.getClassLoader().getResource("images/skybox-all.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture skyboxTexture = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/skybox-all.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
 
         skybox.setTexture(Skybox.Face.North, skyboxTexture);
         skybox.setTexture(Skybox.Face.South, skyboxTexture);
