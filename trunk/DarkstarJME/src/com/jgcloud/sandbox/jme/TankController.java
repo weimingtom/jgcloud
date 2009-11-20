@@ -1,5 +1,6 @@
 package com.jgcloud.sandbox.jme;
 
+import com.jgcloud.sandbox.darkstar.DarkstarUpdater;
 import com.jme.input.controls.GameControl;
 import com.jme.input.controls.GameControlManager;
 import com.jme.input.controls.binding.KeyboardBinding;
@@ -8,7 +9,6 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
 
-import com.jme.scene.Spatial;
 import java.util.logging.Logger;
 import static com.jgcloud.sandbox.jme.TankController.CubeAction.*;
 import static com.jme.input.KeyInput.*;
@@ -69,11 +69,11 @@ public class TankController extends Controller {
     @Override
     public void update(float time) {
         if (value(EXIT) > 0) {
+            DarkstarUpdater.getInstance().serverLogout();
             System.exit(0); //OK, this is just a demo...
         }
 
         hAngle += TURN_SPEED * time * (value(LEFT) - value(RIGHT));
-//        vAngle += SPEED * time * (value(DOWN) - value(UP));
         node.getLocalRotation().fromAngles(vAngle, hAngle, 0f);
 
         Vector3f newLocation = node.getLocalTranslation();
