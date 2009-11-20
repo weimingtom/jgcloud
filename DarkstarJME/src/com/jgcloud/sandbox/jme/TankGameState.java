@@ -1,5 +1,6 @@
 package com.jgcloud.sandbox.jme;
 
+import com.jgcloud.sandbox.darkstar.DarkstarUpdater;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.ChaseCamera;
@@ -53,6 +54,8 @@ public class TankGameState extends BasicGameState {
         GameState client = new TankGameState();
         GameStateManager.getInstance().attachChild(client);
         client.setActive(true);
+
+        logger.info("TankGameState.main complete");
     }
 
 
@@ -61,6 +64,9 @@ public class TankGameState extends BasicGameState {
 
         cam = DisplaySystem.getDisplaySystem().getRenderer().getCamera();
         init();
+
+        Thread t = new Thread(DarkstarUpdater.getInstance(myTank));
+        t.start();
     }
 
 
@@ -225,14 +231,19 @@ public class TankGameState extends BasicGameState {
     private void createSkybox() {
         skybox = new Skybox("skybox", 512, 512, 512);
 
-        Texture skyboxTexture = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/skybox-all.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture skyboxTextureNorth = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/north.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture skyboxTextureSouth = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/south.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture skyboxTextureEast = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/east.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture skyboxTextureWest = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/west.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture skyboxTextureUp = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/up.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture skyboxTextureDown = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/down.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
 
-        skybox.setTexture(Skybox.Face.North, skyboxTexture);
-        skybox.setTexture(Skybox.Face.South, skyboxTexture);
-        skybox.setTexture(Skybox.Face.East, skyboxTexture);
-        skybox.setTexture(Skybox.Face.West, skyboxTexture);
-        skybox.setTexture(Skybox.Face.Up, skyboxTexture);
-        skybox.setTexture(Skybox.Face.Down, skyboxTexture);
+        skybox.setTexture(Skybox.Face.North, skyboxTextureNorth);
+        skybox.setTexture(Skybox.Face.South, skyboxTextureSouth);
+        skybox.setTexture(Skybox.Face.East, skyboxTextureEast);
+        skybox.setTexture(Skybox.Face.West, skyboxTextureWest);
+        skybox.setTexture(Skybox.Face.Up, skyboxTextureUp);
+        skybox.setTexture(Skybox.Face.Down, skyboxTextureDown);
 
         rootNode.attachChild(skybox);
     }
