@@ -18,7 +18,7 @@ import static com.jme.input.controls.binding.MouseButtonBinding.*;
 public class TankController extends Controller {
     Logger logger = Logger.getLogger(TankController.class.getName());
 
-    enum CubeAction {LEFT, RIGHT, UP, DOWN, EXIT};
+    enum CubeAction {FAST, LEFT, RIGHT, UP, DOWN, EXIT};
 
     private final static float TURN_SPEED = 2F;
     private final static float FORWARD_SPEED = 16F;
@@ -43,6 +43,7 @@ public class TankController extends Controller {
         bindKey(DOWN, KEY_DOWN);
         bindKey(LEFT, KEY_LEFT);
         bindKey(RIGHT, KEY_RIGHT);
+        bindKey(FAST, KEY_LSHIFT);
 
         //bind mouse buttons
         bindMouseButton(LEFT, LEFT_BUTTON);
@@ -82,7 +83,10 @@ public class TankController extends Controller {
         // between 0 and 2. I think 0=x, 1=y and 2=z... But I is baffled!
         Vector3f direction = new Vector3f(node.getLocalRotation().getRotationColumn(2));
 
-        newLocation.addLocal(direction.mult(time*FORWARD_SPEED*(value(DOWN) - value(UP))));
+        float speed = time * FORWARD_SPEED * (value(DOWN) - value(UP));
+        speed *= 1 + (2 * value(FAST)); // Double the speed if the fast button is being pressed.
+//        newLocation.addLocal(direction.mult(time*FORWARD_SPEED*(value(DOWN) - value(UP))*(1+(2*value(FAST)))));
+        newLocation.addLocal(direction.mult(speed));
         node.setLocalTranslation(newLocation);
     }
 }
