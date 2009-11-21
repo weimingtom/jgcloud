@@ -93,6 +93,8 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
             throw new RuntimeException("You should be calling the empty getInstance() method, because the myTank node has already been specified.");
         }
 
+        instance = new DarkstarUpdater(myTank);
+
         return instance;
     }
 
@@ -103,11 +105,7 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
      * @return The DarkstarUpdater reference.
      */
     public static DarkstarUpdater getInstance() {
-        if (instance == null) {
-            throw new NullPointerException("getInstance(Node myTank) must be called first in order to initiate.");
-        } else {
             return instance;
-        }
     }
 
     
@@ -147,10 +145,11 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
             // Ensure we're logged in and that we have joined the
             // PLAYER_LOCATIONS channel. Otherwise, we're going to come a
             // cropper when trying to send the message to the server.
+
             if (playerLoggedIn && playerChannels.containsKey(DarkstarConstants.PLAYER_LOCATIONS_CHANNEL)) {
                 String message = createPlayerLocationMessage();
 
-                logger.finer(message);
+                logger.fine(message);
 
                 // Now send the message to the server.
                 try {
