@@ -26,6 +26,8 @@ import com.jmex.game.state.BasicGameState;
 import com.jmex.game.state.GameState;
 import com.jmex.game.state.GameStateManager;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 
@@ -45,6 +47,7 @@ public class TankGameState extends BasicGameState {
     private ChaseCamera chaseCamera;
     private Skybox skybox;
     private static StandardGame standardGame;
+    private static Map<String,PlayerDetails> remotePlayers = new ConcurrentHashMap<String,PlayerDetails>();
 
     public static void main(String[] args) {
         standardGame = new StandardGame("GameControl", StandardGame.GameType.GRAPHICAL, null);
@@ -86,6 +89,12 @@ public class TankGameState extends BasicGameState {
         
         getRootNode().updateRenderState();
     }
+
+
+    public static Map<String,PlayerDetails> getRemotePlayers() {
+        return remotePlayers;
+    }
+
 
     private void createArena() {
         // Set up the 'yaw' (90 degrees) for the left and right walls.
@@ -200,7 +209,7 @@ public class TankGameState extends BasicGameState {
         super.update(tpf);
         
         // Execute any tasks on the queue...
-        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
+//        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
 
         chaseCamera.update(tpf);
 

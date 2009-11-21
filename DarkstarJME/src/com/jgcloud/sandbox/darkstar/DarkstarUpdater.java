@@ -1,5 +1,7 @@
 package com.jgcloud.sandbox.darkstar;
 
+import com.jgcloud.sandbox.jme.PlayerDetails;
+import com.jgcloud.sandbox.jme.TankGameState;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
@@ -18,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 /**
@@ -28,6 +29,9 @@ import java.util.logging.Logger;
 public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientChannelListener {
     private static Logger logger = Logger.getLogger(DarkstarUpdater.class.getName());
     private Node myTank; // Reference to the current players tank :)
+
+    private String player = "testUser001";
+    private String password = "ignored"; // Currently, no password authentication is used by the server
 
     /**
      * This class is going to be a singleton. I'm sicking of passing references
@@ -66,8 +70,8 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
      */
     protected DarkstarUpdater(Node myTank) {
         this.myTank = myTank;
-        logger.info("DarkstarUpdater initialized.");
         serverLogin();
+        logger.info("DarkstarUpdater initialized.");
     }
 
 
@@ -100,7 +104,7 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
      */
     public static DarkstarUpdater getInstance() {
         if (instance == null) {
-            throw new NullPointerException("getInstance(Node myTank) must be called first.");
+            throw new NullPointerException("getInstance(Node myTank) must be called first in order to initiate.");
         } else {
             return instance;
         }
@@ -119,6 +123,7 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
 
         // Now start the connection to the server
         try {
+            logger.info("Logging in to host " + connectProps.getProperty("host") + ":" + connectProps.getProperty("port"));
             simpleClient.login(connectProps);
         } catch (IOException ex) {
             logger.severe("Unable to attempt login to Darkstar server: " + ex);
@@ -172,6 +177,7 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
         // I'm going to use a StringBuffer to create the message string. This
         // might be a bit of a time-saver because it's going to be running a lot!
         StringBuffer message = new StringBuffer();
+        message.append("PN=").append(this.player).append(",");
         message.append("CT=").append(System.currentTimeMillis()).append(",");
         message.append("TX=").append(tankTranslation.getX()).append(",");
         message.append("TY=").append(tankTranslation.getY()).append(",");
@@ -221,14 +227,33 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
         }
     }
 
+    /**
+     * Parses the locations message from the server by splitting on commas, and
+     * then creating key/value pairs by splitting on the equals sign.
+     *
+     * @param message The original message.
+     *
+     * @return A key/value pair map of the parsed message.
+     */
+    private Map<String,String> parseMessage(String message) {
+        Map<String,String> messageDetails = new HashMap<String,String>();
+
+        String[] rows = message.split(",");
+
+        for (String row : rows) {
+            String[] keyValue = row.split("=");
+            messageDetails.put(keyValue[0], keyValue[1]);
+        }
+
+        return messageDetails;
+    }
+
 
     //
     // Start of SimpleClientListener interface methods
     //
 
     public PasswordAuthentication getPasswordAuthentication() {
-        String player = "testUser001";
-        String password = "ignored"; // Currently, no password authentication is used by the server
         logger.info("Logging in as player " + player);
         return new PasswordAuthentication(player, password.toCharArray());
     }
@@ -279,18 +304,36 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
         logger.severe("We were disconnected from the Darkstar server (graceful=" + graceful + "): " + reason);
     }
 
+
     public void receivedMessage(ClientChannel clientChannel, ByteBuffer message) {
         logger.info("Received message on channel " + clientChannel + ": " + decodeMessage(message));
+        Map<String,String> messageDetails = parseMessage(decodeMessage(message));
 
         // If we're being sent updates of another players location, we will add
         // a task to the GPL thread to move them.
         if (clientChannel.getName().equals(DarkstarConstants.PLAYER_LOCATIONS_CHANNEL)) {
-            // Queue up a task to change the location of a player!
+            final PlayerDetails pd = new PlayerDetails(
+                messageDetails.get("PN"),
+                Float.parseFloat(messageDetails.get("TX")),
+                Float.parseFloat(messageDetails.get("TY")),
+                Float.parseFloat(messageDetails.get("TZ")),
+                Float.parseFloat(messageDetails.get("RX")),
+                Float.parseFloat(messageDetails.get("RY")),
+                Float.parseFloat(messageDetails.get("RZ")),
+                Float.parseFloat(messageDetails.get("RW")),
+                Long.parseLong(messageDetails.get("CT"))
+            );
+
+            // Queue up a task to change the location of a remote player
             GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).enqueue(new Callable<String>() {
                 public String call() throws Exception {
-                    // In here we need to update the GPL thread with the players
-                    // location, rotation etc. I'm not sure yet on the best way
-                    // to implement this without it seeming bloody confusing!
+                    // This next command puts (or updates) the location of
+                    // remote players in to the static map in TankGameState.
+                    // The intention is that all of the grunt work has been done
+                    // already by this thread (ie Creation of the PlayerDetails
+                    // object. Therefore, putting/updating the Map should be
+                    // microsend work.
+                    TankGameState.getRemotePlayers().put(pd.getPlayerName(), pd);
                     return null; // This is a player update, don't think we need to give anything back.
                 }
             });
