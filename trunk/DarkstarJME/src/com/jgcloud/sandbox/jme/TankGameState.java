@@ -12,6 +12,7 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.Skybox;
+import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Capsule;
 import com.jme.scene.shape.Quad;
@@ -43,6 +44,8 @@ public class TankGameState extends BasicGameState {
     private int WALL_HEIGHT = 10;
 
     private Node myTank;
+    private Node remotePlayersNode; // Node that contains the remote players.
+
     private Camera cam;
     private ChaseCamera chaseCamera;
     private Skybox skybox;
@@ -74,18 +77,15 @@ public class TankGameState extends BasicGameState {
 
 
     protected void init() {
-        // Set it so that each "execute" statement only executes one task...
-        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).setExecuteAll(false);
-
+        configureGameTaskQueueManager();
         createArena();
-
-        myTank = createPlayer();
-        getRootNode().attachChild(myTank);
-
+        createMyTank();
         createChaseCamera();
         createSkybox();
         createLighting();
         addController();
+        createRemotePlayersNode();
+        createTestPlayer();
         
         getRootNode().updateRenderState();
     }
@@ -93,6 +93,11 @@ public class TankGameState extends BasicGameState {
 
     public static Map<String,PlayerDetails> getRemotePlayers() {
         return remotePlayers;
+    }
+
+    private void configureGameTaskQueueManager() {
+        // Set it so that each "execute" statement only executes one task...
+        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).setExecuteAll(false);
     }
 
 
@@ -165,14 +170,19 @@ public class TankGameState extends BasicGameState {
         rootNode.attachChild(walls);
     }
 
+    private void createMyTank() {
+        myTank = createPlayer("MyTank");
+        getRootNode().attachChild(myTank);
+    }
+
     /**
      * Returns a tank node. Although this is meant for the player on this
      * computer, it can also be used to create a remote player as well.
      *
      * @return A tank node
      */
-    private Node createPlayer() {
-        Node tank = new Node("Tank");
+    private Node createPlayer(String playerName) {
+        Node tank = new Node(playerName);
 
         //load a texture for the myTank
         TextureState tankTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
@@ -207,9 +217,8 @@ public class TankGameState extends BasicGameState {
     @Override
     public void update(float tpf) {
         super.update(tpf);
-        
-        // Execute any tasks on the queue...
-//        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
+
+        updateRemotePlayerLocations();
 
         chaseCamera.update(tpf);
 
@@ -234,6 +243,11 @@ public class TankGameState extends BasicGameState {
         chaseCamera = new ChaseCamera(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), myTank, props);
 //        chaseCamera.setMaxDistance(10);
 //        chaseCamera.setMinDistance(6);
+    }
+
+    private void createRemotePlayersNode() {
+        remotePlayersNode = new Node("RemotePlayers");
+        getRootNode().attachChild(remotePlayersNode);
     }
 
 
@@ -273,5 +287,30 @@ public class TankGameState extends BasicGameState {
 
     private void addController() {
         getRootNode().addController(new TankController(myTank));
+    }
+
+    private void createTestPlayer() {
+        // PN=testUser001,CT=1258839563002,TX=-6.7676134,TY=0.0,TZ=-18.557644,RX=0.0,RY=0.050041594,RZ=0.0,RW=0.9987471
+        PlayerDetails pd = new PlayerDetails("Richard", new Vector3f(-6.7676134F,0.0F,-18.557644F), new Quaternion(0.0F,0.050041594F,0.0F,0.9987471F), 1258839563002L);
+        remotePlayers.put(pd.getPlayerName(), pd);
+    }
+
+    private void updateRemotePlayerLocations() {
+        // Execute any tasks on the queue...
+//        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
+        for (String remotePlayerName : remotePlayers.keySet()) {
+            PlayerDetails playerDetails = remotePlayers.get(remotePlayerName);
+            // Node is a sub-class of spatial. The getChild() returns a spatial,
+            // but that's ok for what we need to do here.
+            Spatial remotePlayerTank = remotePlayersNode.getChild(remotePlayerName);
+            // This might be a new player, so create it if it is.
+            if (remotePlayerTank == null) {
+                remotePlayerTank = createPlayer(remotePlayerName);
+                remotePlayersNode.attachChild(remotePlayerTank);
+                getRootNode().updateRenderState();
+            }
+            remotePlayerTank.setLocalTranslation(playerDetails.getLocation());
+            remotePlayerTank.setLocalRotation(playerDetails.getRotation());
+        }
     }
 }
