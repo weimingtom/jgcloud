@@ -305,12 +305,19 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
 
 
     public void receivedMessage(ClientChannel clientChannel, ByteBuffer message) {
-        logger.info("Received message on channel " + clientChannel + ": " + decodeMessage(message));
-        Map<String,String> messageDetails = parseMessage(decodeMessage(message));
+        String decodedMessage = decodeMessage(message);
+        logger.info("Received message on channel " + clientChannel.getName() + ": " + decodedMessage);
 
+        if (message == null || decodedMessage.length() == 0) {
+            logger.severe("Something screwy going on. Message is null or empty.");
+            return;
+        }
+        
         // If we're being sent updates of another players location, we will add
         // a task to the GPL thread to move them.
         if (clientChannel.getName().equals(DarkstarConstants.PLAYER_LOCATIONS_CHANNEL)) {
+            Map<String,String> messageDetails = parseMessage(decodedMessage);
+            
             final PlayerDetails pd = new PlayerDetails(
                 messageDetails.get("PN"),
                 Float.parseFloat(messageDetails.get("TX")),
@@ -336,13 +343,6 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
                     return null; // This is a player update, don't think we need to give anything back.
                 }
             });
-        }
-
-        // Just run a double-check to ensure that we're not getting sent a
-        // message on a channel we're not supposed to be connected to. Can this
-        // even happen??
-        if (!playerChannels.containsKey(clientChannel.getName())) {
-            logger.warning("Why are we receiving messages from channel " + clientChannel.getName() + "? We are not (theoretically) attached to this channel!");
         }
     }
 
