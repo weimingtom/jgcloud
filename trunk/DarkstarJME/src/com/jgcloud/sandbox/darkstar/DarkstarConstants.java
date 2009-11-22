@@ -11,5 +11,5 @@ public class DarkstarConstants {
     public static final String MESSAGE_CHARSET = "UTF-8";
     public static final String PLAYER_LOCATIONS_CHANNEL = "PLAYER_LOCATIONS";
 
-    public static final long LOCATION_UPDATE_INTERVAL_MS = 10000;
+    public static final long LOCATION_UPDATE_INTERVAL_MS = 200;
 }
