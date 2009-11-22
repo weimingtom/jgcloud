@@ -218,6 +218,9 @@ public class TankGameState extends BasicGameState {
     public void update(float tpf) {
         super.update(tpf);
 
+        // Execute any tasks on the queue...
+        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
+
         updateRemotePlayerLocations();
 
         chaseCamera.update(tpf);
@@ -296,8 +299,6 @@ public class TankGameState extends BasicGameState {
     }
 
     private void updateRemotePlayerLocations() {
-        // Execute any tasks on the queue...
-//        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
         for (String remotePlayerName : remotePlayers.keySet()) {
             PlayerDetails playerDetails = remotePlayers.get(remotePlayerName);
             // Node is a sub-class of spatial. The getChild() returns a spatial,
