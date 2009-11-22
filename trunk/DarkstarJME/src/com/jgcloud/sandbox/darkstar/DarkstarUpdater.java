@@ -216,9 +216,11 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
      * @return A String representation (ie something more readable).
      */
     private String decodeMessage(ByteBuffer message) {
+        ByteBuffer duplicateMessage = message.duplicate();
+
         try {
-            byte[] bytes = new byte[message.remaining()];
-            message.get(bytes);
+            byte[] bytes = new byte[duplicateMessage.remaining()];
+            duplicateMessage.get(bytes);
             return new String(bytes, DarkstarConstants.MESSAGE_CHARSET);
         } catch (UnsupportedEncodingException ex) {
             logger.severe("Required character set " + DarkstarConstants.MESSAGE_CHARSET + " not found: " + ex);
