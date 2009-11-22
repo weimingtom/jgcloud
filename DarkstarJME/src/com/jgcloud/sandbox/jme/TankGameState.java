@@ -85,7 +85,7 @@ public class TankGameState extends BasicGameState {
         createLighting();
         addController();
         createRemotePlayersNode();
-        createTestPlayer();
+//        createTestPlayer();
         
         getRootNode().updateRenderState();
     }
