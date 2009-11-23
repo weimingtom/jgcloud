@@ -19,8 +19,6 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.jme.util.GameTaskQueue;
-import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.game.StandardGame;
 import com.jmex.game.state.BasicGameState;
@@ -86,7 +84,6 @@ public class TankGameState extends BasicGameState {
 
 
     protected void init() {
-        configureGameTaskQueueManager();
         createArena();
         createMyTank();
         createChaseCamera();
@@ -101,11 +98,6 @@ public class TankGameState extends BasicGameState {
 
     public static Map<String,PlayerDetails> getRemotePlayers() {
         return remotePlayers;
-    }
-
-    private void configureGameTaskQueueManager() {
-        // Set it so that each "execute" statement only executes one task...
-        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).setExecuteAll(false);
     }
 
 
@@ -229,11 +221,10 @@ public class TankGameState extends BasicGameState {
     public void update(float tpf) {
         super.update(tpf);
 
-        // Execute any tasks on the queue...
-//        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
-
+        // See if there are any player location updates.
         updateRemotePlayerLocations();
 
+        // Keep the chase camera behaving itself :)
         chaseCamera.update(tpf);
 
         //we want to keep the skybox around our eyes, so move it with the camera.
@@ -260,14 +251,16 @@ public class TankGameState extends BasicGameState {
 
 
     private void createSkybox() {
-        skybox = new Skybox("skybox", 512, 512, 512);
+        skybox = new Skybox("skybox", 256, 256, 256);
 
-        Texture skyboxTextureNorth = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/north.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
-        Texture skyboxTextureSouth = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/south.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
-        Texture skyboxTextureEast = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/east.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
-        Texture skyboxTextureWest = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/west.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
-        Texture skyboxTextureUp = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/up.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
-        Texture skyboxTextureDown = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/down.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+
+
+        Texture skyboxTextureNorth = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/north.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture skyboxTextureSouth = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/south.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture skyboxTextureEast = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/east.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture skyboxTextureWest = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/west.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture skyboxTextureUp = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/up.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture skyboxTextureDown = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/down.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
 
         skybox.setTexture(Skybox.Face.North, skyboxTextureNorth);
         skybox.setTexture(Skybox.Face.South, skyboxTextureSouth);
@@ -300,25 +293,16 @@ public class TankGameState extends BasicGameState {
     }
 
 
+    /**
+     * Poll the DarkstarUpdater.playerDetailsQueue for any new PlayerDetails
+     * information.
+     *
+     * Note that this is run once per frame in the "update(...) method.
+     * Therefore, only one player can get  updated per frame. My thinking (for
+     * now) is that we can always increase the number of calls per frame if
+     * necessary.
+     */
     private void updateRemotePlayerLocations() {
-//        for (String remotePlayerName : remotePlayers.keySet()) {
-//            PlayerDetails playerDetails = remotePlayers.get(remotePlayerName);
-//
-//            // Node is a sub-class of spatial. The getChild() returns a spatial,
-//            // but that's ok for what we need to do here.
-//            Spatial remotePlayerTank = remotePlayersNode.getChild(remotePlayerName);
-//
-//            // This might be a new player, so create it if it is.
-//            if (remotePlayerTank == null) {
-//                remotePlayerTank = createPlayer(remotePlayerName);
-//                remotePlayersNode.attachChild(remotePlayerTank);
-//                getRootNode().updateRenderState();
-//            }
-//
-//            remotePlayerTank.setLocalTranslation(playerDetails.getLocation());
-//            remotePlayerTank.setLocalRotation(playerDetails.getRotation());
-//        }
-        
         // First poll the playerDetailsQueue, if there's nothing there, then
         // it will return null, otherwise we'll get some details about a 
         // player.
@@ -342,6 +326,7 @@ public class TankGameState extends BasicGameState {
             getRootNode().updateRenderState();
         }
 
+        // Finally, we can now set its new location and rotation.
         remotePlayerTank.setLocalTranslation(playerDetails.getLocation());
         remotePlayerTank.setLocalRotation(playerDetails.getRotation());
     }

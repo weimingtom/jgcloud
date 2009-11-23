@@ -1,12 +1,9 @@
 package com.jgcloud.sandbox.darkstar;
 
 import com.jgcloud.sandbox.jme.PlayerDetails;
-import com.jgcloud.sandbox.jme.TankGameState;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
-import com.jme.util.GameTaskQueue;
-import com.jme.util.GameTaskQueueManager;
 import com.sun.sgs.client.ClientChannel;
 import com.sun.sgs.client.ClientChannelListener;
 import com.sun.sgs.client.simple.SimpleClient;
@@ -20,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Queue;
-import java.util.concurrent.Callable;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
@@ -32,7 +29,7 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
     private static Logger logger = Logger.getLogger(DarkstarUpdater.class.getName());
     private Node myTank; // Reference to the current players tank :)
 
-    private String player = "testUserNovatech";
+    private String player = "testUser" + new Random().nextInt(10000);
     private String password = "ignored"; // Currently, no password authentication is used by the server
 
     public static Queue<PlayerDetails> playerDetailsQueue = new ConcurrentLinkedQueue<PlayerDetails>();
@@ -307,6 +304,7 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
 
     public void disconnected(boolean graceful, String reason) {
         logger.severe("We were disconnected from the Darkstar server (graceful=" + graceful + "): " + reason);
+        playerLoggedIn = false;
     }
 
 
@@ -321,7 +319,7 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
         }
         
         // If we're being sent updates of another players location, we will add
-        // a task to the GPL thread to move them.
+        // a new update to the playerDetails queue.
         if (clientChannel.getName().equals(DarkstarConstants.PLAYER_LOCATIONS_CHANNEL)) {
             Map<String,String> messageDetails = parseMessage(decodedMessage);
             
@@ -341,20 +339,6 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
             // sent by us!).
             if (! pd.getPlayerName().equals(this.player)) {
                 playerDetailsQueue.add(pd);
-
-//                // Queue up a task to change the location of a remote player
-//                GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).enqueue(new Callable<String>() {
-//                    public String call() throws Exception {
-//                        // This next command puts (or updates) the location of
-//                        // remote players in to the static map in TankGameState.
-//                        // The intention is that all of the grunt work has been done
-//                        // already by this thread (ie Creation of the PlayerDetails
-//                        // object. Therefore, putting/updating the Map should be
-//                        // microsend work.
-//                        TankGameState.getRemotePlayers().put(pd.getPlayerName(), pd);
-//                        return null; // This is a player update, don't think we need to give anything back.
-//                    }
-//                });
             }
         }
     }
