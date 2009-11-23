@@ -50,11 +50,17 @@ public class TankGameState extends BasicGameState {
     private ChaseCamera chaseCamera;
     private Skybox skybox;
     private static StandardGame standardGame;
+
+    /**
+     * The remotePlayers map gets updated by the DarkstarUpdater thread. This
+     * will then get handled by the update(...) method. ConcurrentHashMap is a
+     * nice fast thread-safe map, just right for the job.
+     */
     private static Map<String,PlayerDetails> remotePlayers = new ConcurrentHashMap<String,PlayerDetails>();
 
     public static void main(String[] args) {
         standardGame = new StandardGame("GameControl", StandardGame.GameType.GRAPHICAL, null);
-        standardGame.getSettings().setSamples(8);
+        standardGame.getSettings().setSamples(0);
         standardGame.start();
 
         GameState client = new TankGameState();
@@ -65,6 +71,9 @@ public class TankGameState extends BasicGameState {
     }
 
 
+    /**
+     * Main constructor.
+     */
     public TankGameState() {
         super("Main Client");
 
@@ -85,7 +94,6 @@ public class TankGameState extends BasicGameState {
         createLighting();
         addController();
         createRemotePlayersNode();
-//        createTestPlayer();
         
         getRootNode().updateRenderState();
     }
@@ -101,6 +109,9 @@ public class TankGameState extends BasicGameState {
     }
 
 
+    /**
+     * Creates a simple arena...
+     */
     private void createArena() {
         // Set up the 'yaw' (90 degrees) for the left and right walls.
         Quaternion yaw90 = new Quaternion();
@@ -237,15 +248,9 @@ public class TankGameState extends BasicGameState {
         targetOffset.z = ((BoundingBox)myTank.getWorldBound()).zExtent * 1F;
 
         HashMap props = new HashMap();
-//        props.put(ThirdPersonMouseLook.PROP_MAXROLLOUT, "10");
-//        props.put(ThirdPersonMouseLook.PROP_MINROLLOUT, "2");
         props.put(ChaseCamera.PROP_TARGETOFFSET, targetOffset);
-//        props.put(ThirdPersonMouseLook.PROP_MAXASCENT, ""+(45*FastMath.DEG_TO_RAD));
-//        props.put(ChaseCamera.PROP_INITIALSPHERECOORDS, new Vector3f(5, 0, 30 * FastMath.DEG_TO_RAD));
-//        props.put(ChaseCamera.PROP_TARGETOFFSET, targetOffset);
+
         chaseCamera = new ChaseCamera(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), myTank, props);
-//        chaseCamera.setMaxDistance(10);
-//        chaseCamera.setMinDistance(6);
     }
 
     private void createRemotePlayersNode() {
@@ -274,6 +279,7 @@ public class TankGameState extends BasicGameState {
         rootNode.attachChild(skybox);
     }
 
+
     private void createLighting() {
         //Spot on!
         final PointLight light = new PointLight();
@@ -288,28 +294,27 @@ public class TankGameState extends BasicGameState {
         getRootNode().setRenderState(lightState);
     }
 
+
     private void addController() {
         getRootNode().addController(new TankController(myTank));
     }
 
-    private void createTestPlayer() {
-        // PN=testUser001,CT=1258839563002,TX=-6.7676134,TY=0.0,TZ=-18.557644,RX=0.0,RY=0.050041594,RZ=0.0,RW=0.9987471
-        PlayerDetails pd = new PlayerDetails("Richard", new Vector3f(-6.7676134F,0.0F,-18.557644F), new Quaternion(0.0F,0.050041594F,0.0F,0.9987471F), 1258839563002L);
-        remotePlayers.put(pd.getPlayerName(), pd);
-    }
 
     private void updateRemotePlayerLocations() {
         for (String remotePlayerName : remotePlayers.keySet()) {
             PlayerDetails playerDetails = remotePlayers.get(remotePlayerName);
+
             // Node is a sub-class of spatial. The getChild() returns a spatial,
             // but that's ok for what we need to do here.
             Spatial remotePlayerTank = remotePlayersNode.getChild(remotePlayerName);
+
             // This might be a new player, so create it if it is.
             if (remotePlayerTank == null) {
                 remotePlayerTank = createPlayer(remotePlayerName);
                 remotePlayersNode.attachChild(remotePlayerTank);
                 getRootNode().updateRenderState();
             }
+
             remotePlayerTank.setLocalTranslation(playerDetails.getLocation());
             remotePlayerTank.setLocalRotation(playerDetails.getRotation());
         }

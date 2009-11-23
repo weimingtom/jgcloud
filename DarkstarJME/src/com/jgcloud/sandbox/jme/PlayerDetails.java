@@ -4,8 +4,10 @@ import com.jme.math.*;
 
 
 /**
+ * This is a bean that contains the necessary information to display a remote
+ * player.
  *
- * @author Richard
+ * @author Richard Hawkes
  */
 public class PlayerDetails {
     private String playerName;
