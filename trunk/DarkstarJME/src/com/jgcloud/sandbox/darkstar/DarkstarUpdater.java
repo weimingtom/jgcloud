@@ -19,7 +19,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Queue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 /**
@@ -32,6 +34,8 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
 
     private String player = "testUserNovatech";
     private String password = "ignored"; // Currently, no password authentication is used by the server
+
+    public static Queue<PlayerDetails> playerDetailsQueue = new ConcurrentLinkedQueue<PlayerDetails>();
 
     /**
      * This class is going to be a singleton. I'm sicking of passing references
@@ -336,19 +340,21 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
             // Add a location update to the main thread (provided it didn't get
             // sent by us!).
             if (! pd.getPlayerName().equals(this.player)) {
-                // Queue up a task to change the location of a remote player
-                GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).enqueue(new Callable<String>() {
-                    public String call() throws Exception {
-                        // This next command puts (or updates) the location of
-                        // remote players in to the static map in TankGameState.
-                        // The intention is that all of the grunt work has been done
-                        // already by this thread (ie Creation of the PlayerDetails
-                        // object. Therefore, putting/updating the Map should be
-                        // microsend work.
-                        TankGameState.getRemotePlayers().put(pd.getPlayerName(), pd);
-                        return null; // This is a player update, don't think we need to give anything back.
-                    }
-                });
+                playerDetailsQueue.add(pd);
+
+//                // Queue up a task to change the location of a remote player
+//                GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).enqueue(new Callable<String>() {
+//                    public String call() throws Exception {
+//                        // This next command puts (or updates) the location of
+//                        // remote players in to the static map in TankGameState.
+//                        // The intention is that all of the grunt work has been done
+//                        // already by this thread (ie Creation of the PlayerDetails
+//                        // object. Therefore, putting/updating the Map should be
+//                        // microsend work.
+//                        TankGameState.getRemotePlayers().put(pd.getPlayerName(), pd);
+//                        return null; // This is a player update, don't think we need to give anything back.
+//                    }
+//                });
             }
         }
     }
