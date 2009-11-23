@@ -230,7 +230,7 @@ public class TankGameState extends BasicGameState {
         super.update(tpf);
 
         // Execute any tasks on the queue...
-        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
+//        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
 
         updateRemotePlayerLocations();
 
@@ -301,22 +301,48 @@ public class TankGameState extends BasicGameState {
 
 
     private void updateRemotePlayerLocations() {
-        for (String remotePlayerName : remotePlayers.keySet()) {
-            PlayerDetails playerDetails = remotePlayers.get(remotePlayerName);
+//        for (String remotePlayerName : remotePlayers.keySet()) {
+//            PlayerDetails playerDetails = remotePlayers.get(remotePlayerName);
+//
+//            // Node is a sub-class of spatial. The getChild() returns a spatial,
+//            // but that's ok for what we need to do here.
+//            Spatial remotePlayerTank = remotePlayersNode.getChild(remotePlayerName);
+//
+//            // This might be a new player, so create it if it is.
+//            if (remotePlayerTank == null) {
+//                remotePlayerTank = createPlayer(remotePlayerName);
+//                remotePlayersNode.attachChild(remotePlayerTank);
+//                getRootNode().updateRenderState();
+//            }
+//
+//            remotePlayerTank.setLocalTranslation(playerDetails.getLocation());
+//            remotePlayerTank.setLocalRotation(playerDetails.getRotation());
+//        }
+        
+        // First poll the playerDetailsQueue, if there's nothing there, then
+        // it will return null, otherwise we'll get some details about a 
+        // player.
+        PlayerDetails playerDetails = DarkstarUpdater.playerDetailsQueue.poll();
 
-            // Node is a sub-class of spatial. The getChild() returns a spatial,
-            // but that's ok for what we need to do here.
-            Spatial remotePlayerTank = remotePlayersNode.getChild(remotePlayerName);
-
-            // This might be a new player, so create it if it is.
-            if (remotePlayerTank == null) {
-                remotePlayerTank = createPlayer(remotePlayerName);
-                remotePlayersNode.attachChild(remotePlayerTank);
-                getRootNode().updateRenderState();
-            }
-
-            remotePlayerTank.setLocalTranslation(playerDetails.getLocation());
-            remotePlayerTank.setLocalRotation(playerDetails.getRotation());
+        // If there's nothing on the queue, then there's nothing to do !
+        if (playerDetails == null) {
+            return;
         }
+
+        // Now we find that player on the remotePlayersNode.
+        //
+        // Node is a sub-class of spatial. The getChild() returns a spatial,
+        // but that's ok for what we need to do here.
+        Spatial remotePlayerTank = remotePlayersNode.getChild(playerDetails.getPlayerName());
+
+        // This might be a new player, so create it if it is.
+        if (remotePlayerTank == null) {
+            remotePlayerTank = createPlayer(playerDetails.getPlayerName());
+            remotePlayersNode.attachChild(remotePlayerTank);
+            getRootNode().updateRenderState();
+        }
+
+        remotePlayerTank.setLocalTranslation(playerDetails.getLocation());
+        remotePlayerTank.setLocalRotation(playerDetails.getRotation());
     }
 }
