@@ -31,6 +31,8 @@ import java.util.logging.Logger;
 
 
 /**
+ * This is the main JME class to setup and view the scene. It also handles any
+ * updates sent from the server, and positions the remote tanks as required.
  *
  * @author Richard Hawkes
  */
@@ -232,6 +234,9 @@ public class TankGameState extends BasicGameState {
     }
 
 
+    /**
+     * Not a very good implementatin of a chase camera. Works though.
+     */
     private void createChaseCamera() {
         Vector3f targetOffset = new Vector3f();
 
@@ -244,16 +249,20 @@ public class TankGameState extends BasicGameState {
         chaseCamera = new ChaseCamera(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), myTank, props);
     }
 
+    /**
+     * Create a node that will hold all of the remote players.
+     */
     private void createRemotePlayersNode() {
         remotePlayersNode = new Node("RemotePlayers");
         getRootNode().attachChild(remotePlayersNode);
     }
 
 
+    /**
+     * A little unnecessary this, but I wanted to play around with skyboxes :)
+     */
     private void createSkybox() {
         skybox = new Skybox("skybox", 256, 256, 256);
-
-
 
         Texture skyboxTextureNorth = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/north.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
         Texture skyboxTextureSouth = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/south.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
@@ -273,6 +282,9 @@ public class TankGameState extends BasicGameState {
     }
 
 
+    /**
+     * Some simple lighting for our scene.
+     */
     private void createLighting() {
         //Spot on!
         final PointLight light = new PointLight();
@@ -288,6 +300,9 @@ public class TankGameState extends BasicGameState {
     }
 
 
+    /**
+     * Sets up the controller for our tank.
+     */
     private void addController() {
         getRootNode().addController(new TankController(myTank));
     }

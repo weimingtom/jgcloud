@@ -5,6 +5,12 @@ package com.jgcloud.sandbox.darkstar;
  * @author Richard Hawkes
  */
 public class DarkstarConstants {
+    
+    /**
+     * Constructor is private, as this is not meant to be instantiated.
+     */
+    private DarkstarConstants() { }
+
     public static final String DARKSTAR_SERVER_HOST = "192.168.1.103";
     public static final String DARKSTAR_SERVER_PORT = "1139";
 

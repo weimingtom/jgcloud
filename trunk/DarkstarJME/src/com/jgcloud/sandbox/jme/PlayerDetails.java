@@ -23,6 +23,19 @@ public class PlayerDetails {
         this.lastUpdateTimeMillis = lastUpdateTimeMillis;
     }
 
+    /**
+     * More basic constructor that does not use any of the JME classes.
+     *
+     * @param playerName
+     * @param lx
+     * @param ly
+     * @param lz
+     * @param rx
+     * @param ry
+     * @param rz
+     * @param rw
+     * @param lastUpdateTimeMills
+     */
     public PlayerDetails(String playerName, float lx, float ly, float lz, float rx, float ry, float rz, float rw, long lastUpdateTimeMills) {
         this(
             playerName,
@@ -87,6 +100,4 @@ public class PlayerDetails {
     public void setLastUpdateTimeMillis(long lastUpdateTimeMillis) {
         this.lastUpdateTimeMillis = lastUpdateTimeMillis;
     }
-
-
 }
