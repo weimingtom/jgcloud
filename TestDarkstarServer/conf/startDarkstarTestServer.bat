@@ -1,0 +1,1 @@
+java -jar sgs-server-dist-0.9.11\bin\sgs-boot.jar sgs-server-dist-0.9.11\tutorial\conf\TestDarkstarServer.boot
