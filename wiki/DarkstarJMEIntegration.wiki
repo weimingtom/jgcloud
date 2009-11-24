@@ -50,7 +50,7 @@ This code is a little more involved, so I'd like to get a few of the basic class
 
 Good, so that only leaves us with `TankGameState` and `DarkstarUpdater` left. Phew!
 
-==DarkstarUpdater==
+==!DarkstarUpdater==
 
 I'd like to discuss this one first, because although it gets created and started by the `TankGameState`, it is doing the grunt work of communicating to/from the server.
 
