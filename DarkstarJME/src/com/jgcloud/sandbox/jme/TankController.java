@@ -14,7 +14,11 @@ import static com.jgcloud.sandbox.jme.TankController.CubeAction.*;
 import static com.jme.input.KeyInput.*;
 import static com.jme.input.controls.binding.MouseButtonBinding.*;
 
-
+/**
+ * Basic Controller implementation for our tank.
+ *
+ * @author Richard Hawkes
+ */
 public class TankController extends Controller {
     Logger logger = Logger.getLogger(TankController.class.getName());
 
