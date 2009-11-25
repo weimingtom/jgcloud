@@ -383,7 +383,7 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
     public void receivedMessage(ClientChannel clientChannel, ByteBuffer message) {
         String decodedMessage = decodeMessage(message);
 
-        logger.info("Received message on channel " + clientChannel.getName() + ": " + decodedMessage);
+        logger.fine("Received message on channel " + clientChannel.getName() + ": " + decodedMessage);
 
         if (message == null || decodedMessage.length() == 0) {
             logger.severe("Something screwy going on. Message is null or empty.");
@@ -411,6 +411,13 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
             // sent by us!).
             if (! pd.getPlayerName().equals(this.player)) {
                 playerDetailsQueue.add(pd);
+            } else {
+                // Aha, this message was sent by us. We can see how long a round
+                // trip takes to and from the server...
+                long timeWeSentMessageToTheServer = pd.getLastUpdateTimeMillis();
+                long timeNow = System.currentTimeMillis();
+                long roundTripTime = timeNow - timeWeSentMessageToTheServer;
+                logger.fine("Round trip time=" + roundTripTime + "ms");
             }
         }
     }

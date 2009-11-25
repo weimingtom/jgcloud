@@ -1,6 +1,7 @@
 package com.jgcloud.sandbox.jme;
 
 import com.jgcloud.sandbox.darkstar.DarkstarUpdater;
+import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.ChaseCamera;
@@ -68,6 +69,7 @@ public class TankGameState extends BasicGameState {
         client.setActive(true);
 
         logger.info("TankGameState.main complete");
+        SimpleGame sg;
     }
 
 
@@ -262,7 +264,7 @@ public class TankGameState extends BasicGameState {
      * A little unnecessary this, but I wanted to play around with skyboxes :)
      */
     private void createSkybox() {
-        skybox = new Skybox("skybox", 256, 256, 256);
+        skybox = new Skybox("skybox", 512, 512, 512);
 
         Texture skyboxTextureNorth = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/north.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
         Texture skyboxTextureSouth = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/south.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
