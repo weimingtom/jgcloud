@@ -4,14 +4,57 @@
 As part of my gaming project, I wanted to get JME interacting with a Darkstar server for a multiplayer game. Now that I've finished this part, I thought I'd share with you how I did it... Hope it helps !
 
 I'd also appreciate any feedback on the code HERE
-
+----
 =Getting Started=
 
-_NEED TO PUT THE LOCATIONS OF THE FILES HERE_
+==Required Software==
+|| Java 1.6 || http://java.sun.com/javase/downloads/index.jsp ||
+|| JMonkeyEngine || http://code.google.com/p/jmonkeyengine/downloads/list ||
+|| Darkstar Server (binary) || http://projectdarkstar.com/current-distribution.html ||
+|| Darkstar Client (binary) || http://projectdarkstar.com/current-distribution.html ||
+|| Netbeans 6.7.1 (Java SE) || http://netbeans.org/downloads/ ||
+|| SVN Client || eg http://www.open.collab.net/downloads/subversion.html ||
+|| Ant (optional) || http://ant.apache.org/bindownload.cgi ||
+|| Project Source Code || Check out via SVN (see below) ||
 
+This is what I have, and I'm going to assume that you have the same. It's definitely possible to get buy with just Java, JME and Darkstar server/client, but I would have to write a lot more to explain the process!
+
+I'm guessing you already have Java 1.6 and JME on your PC ;)
+
+==Darkstar Installation==
+The Darkstar binaries are just zip files. Could you please extract them to C:\Darkstar. So you should have something like this:
+
+  * c:\Darkstar\sgs-server-dist-0.9.11
+  * c:\Darkstar\sgs-client-dist-0.9.11
+
+==Netbeans Installation==
+This took a while for me because it wants to make a few additional updates afterwards. It's an exe, so follow it through and it'll get there eventually! It asks you at the end if you want to provide feedback. That's a bit more registration I think, and it's not mandatory.
+
+One thing I should mention is that you will run in to trouble if you're on a 64-bit machine. You're going to need a 32-bit Java 1.6 JDK installation (but I bet you knew this if you're using JME). Once you've checked out the source code (see below), you will have to use this compiler instead.
+
+==SVN Client Installation==
+I'm using the Collabnet client, but I think there are others out there. It's just the client (not the server) that you'll need to check out my code from Google. Again, it's just a standard exe installation. It does ask you to try a few other apps at the end. You don't need to bother (for now anyway).
+
+==Ant Installation==
+Not essential (yet), as Netbeans has its own distribution, but will be useful if/when you want to start building the project outside of an IDE.
+
+==Source Code==
+Provided you have downloaded the SVN client successfully, you should be able to check out the code. Make a _root_ directory to put the code (eg c:\svn-source), load up a command-prompt, `cd` in to that directory, and then type:
+{{{
+svn checkout http://jgcloud.googlecode.com/svn/tags/release-0.07 darkstar-jme-example
+}}}
+With a bit of luck, you should start seeing files go in to the `darkstar-jme-example` folder. These are the two Netbeans projects, and you should be able to load them up in Netbeans now.
+
+Depending on where you stored your Darkstar and JME libraries, you will need to go in to each project and clean up the links. Do this by clicking on the project, and selecting "Properties". Now click on the "Libraries" link. You will need to remap each JME and Darkstar library to their home on your computer. Do this for both projects.
+
+Also, for the DarkstarJME project, go in to the "Run" box and change the VM options as needed.
+
+*NOTE* If your version of Darkstar *is not* 0.9.11, edit `TestDarkstarServer/nbproject/project.properties` file and edit the `darkstar.home.dir`.
+==We're Ready to Go!==
+Hopefully that wasn't too painful. Now let's look at the code...
 ----
-
-=The Darkstar Server=
+=Code Review=
+==The Darkstar Server==
 
 Firstly, let's talk about the what the server is going to do. Please note I use client and player interchangably here:
 
@@ -38,9 +81,8 @@ So the server will start up, do some initialization, and create the locations ch
 
 This should be all we need.
 
-----
 
-=The JME Client=
+==The JME Client==
 
 This code is a little more involved, so I'd like to get a few of the basic classes summarised:
 
@@ -50,7 +92,7 @@ This code is a little more involved, so I'd like to get a few of the basic class
 
 Good, so that only leaves us with `TankGameState` and `DarkstarUpdater` left. Phew!
 
-==!DarkstarUpdater==
+===!DarkstarUpdater===
 
 I'd like to discuss this one first, because although it gets created and started by the `TankGameState`, it is doing the grunt work of communicating to/from the server.
 
