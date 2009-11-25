@@ -47,7 +47,7 @@ Provided you have downloaded the SVN client successfully, you should be able to 
 {{{
 svn checkout http://jgcloud.googlecode.com/svn/tags/release-0.07 darkstar-jme-example
 }}}
-With a bit of luck, you should start seeing files go in to the `darkstar-jme-example` folder. These are the two Netbeans projects, and you should be able to load them up in Netbeans now.
+With a bit of luck, you should start seeing files go in to the `darkstar-jme-example` folder. These are the two Netbeans projects, and you should be able to load them up in Netbeans now. Note that they are two separate Netbeans projects.
 
 Depending on where you stored your Darkstar and JME libraries, you will need to go in to each project and clean up the links. Do this by clicking on the project, and selecting "Properties". Now click on the "Libraries" link. You will need to remap each JME and Darkstar library to their home on your computer. Do this for both projects.
 
