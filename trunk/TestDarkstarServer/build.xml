@@ -73,9 +73,6 @@
     -->
 
     <target name="-post-jar">
-        <!--
-        <replace file="conf/test.txt" propertyfile="nbproject/project.properties" token="*" />
-        -->
         <echo message="Copying jar to Darkstar directory"/>
         <copy file="${dist.jar}" toDir="${darkstar.deploy.dir}"/>
         
@@ -88,6 +85,10 @@
         <copy toDir="${darkstar.conf.dir}">
             <fileset dir="conf" includes="**/*.boot,**/*.properties"/>
         </copy>
+
+        <!--
+        <replace file="conf/test.txt" replacefilterfile="nbproject/project.properties" />
+        -->
 
         <echo message="Cleaning up data directory"/>
         <delete dir="${darkstar.data.dir}"/>
