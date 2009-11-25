@@ -53,7 +53,7 @@ Depending on where you stored your Darkstar and JME libraries, you will need to 
 
 Also, for the DarkstarJME project, go in to the "Run" box and change the VM options as needed.
 
-*NOTE* If your version of Darkstar *is not* 0.9.11, edit `TestDarkstarServer/nbproject/project.properties` file and edit the `darkstar.home.dir`.
+*NOTE* If your version of Darkstar *is not* 0.9.11, edit `TestDarkstarServer/nbproject/project.properties` file and edit the `darkstar.home.dir` property.
 ==We're Ready to Go!==
 Hopefully that wasn't too painful. Now let's look at the code...
 ----
@@ -127,7 +127,7 @@ This (you'll be pleased to hear) is not going to take long. I am not going to ta
 
 I want to talk about the piece that handles placing and moving remote clients in our scene. Check the `TankGameState()` constructor. You'll notice that it starts up our `DarkstarUpdater` thread. Good. So as long as things have gone well, we'll be communicating with the server sending our location. We may also be getting `PlayerDetails` objects placed on the `DarkstarUpdater.playerDetailsQueue`. Therefore, in the `update(...)` method, you'll see a call to `updateRemotePlayerLocations()`. This method polls the queue, once per frame. If it finds a new `PlayerDetails` object (it will only do one per frame) then it's got some work to do. Firstly, it checks to see if that player is already in our `remotePlayersNode` node. If it isn't, then it's new, and we'll create a new tank and place it on the `remotePlayersNode`. Once that's out of the way, we can position the tank as per the information in the `PlayerDetails` object. Nice!
 
-So you see that the `TankGameState` class isn't doing much. I hope you'll agree that this is the right approach with most of the grunt work being done by our `DarkstarUpdater` thread.
+So you see that the `TankGameState` class isn't doing much new other than updating the remote players locations. I hope you'll agree that this is the right approach with most of the grunt work being done by our `DarkstarUpdater` thread.
 ----
 =Testing=
 We've come a long way, and we should now be ready to test this all out. Excited? Terrified? Confused? Good. Here's a run-down of what you need to do.
