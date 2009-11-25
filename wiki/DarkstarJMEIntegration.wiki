@@ -132,14 +132,14 @@ So you see that the `TankGameState` class isn't doing much. I hope you'll agree 
 =Testing=
 We've come a long way, and we should now be ready to test this all out. Excited? Terrified? Confused? Good. Here's a run-down of what you need to do.
 
-*TestDarkstarServer Project:*
+*!TestDarkstarServer Project:*
   # Clean and Build the !TestDarkstarServer project (if you haven't already).
   # Run the `startDarkstarTestServer.bat` file which will be in your Darkstar root directory.
 
 *DarkstarJME Project:*
   # update `DarkstarConstants.DARKSTAR_SERVER_HOST` to point to the IP where Darkstar is running. If it's on the same box, then `localhost` should work for you.
-  # Clean and build the !DarkstarJME project.
-  # Right-click the !DarkstarJME project and click "Run".
+  # Clean and build the DarkstarJME project.
+  # Right-click the DarkstarJME project and click "Run".
   # If everything has gone OK, you should see a tank and an arena. Use the arrow keys to move around.
   # Alt-tab back to Netbeans. Check the logging. You should see a `Login successful` and `Joined Channel PLAYER_LOCATIONS` message saying it connected OK. If not, get this sorted!
   # If it has worked, do another "Run". Both instances should have two boxes :)
