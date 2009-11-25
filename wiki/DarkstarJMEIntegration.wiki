@@ -80,7 +80,7 @@ So the server will start up, do some initialization, and create the locations ch
 
 This should be all we need. So let's build it. Peform the following actions:
 
-  * Right-click on the "TestDarkstarServer" and click "Clean and Build".
+  * Right-click on the "!TestDarkstarServer" and click "Clean and Build".
   * Check the output window. As well as compiling, you should see it copying the config files in to the right locations.
   * Now go to your Darkstar home (eg `c:\darkstar`) and double-click the `startDarkstarTestServer.bat` file. It should now be running... Hooray!
   
