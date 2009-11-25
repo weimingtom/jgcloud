@@ -73,12 +73,15 @@
     -->
 
     <target name="-post-jar">
+        <!--
+        <replace file="conf/test.txt" propertyfile="nbproject/project.properties" token="*" />
+        -->
         <echo message="Copying jar to Darkstar directory"/>
         <copy file="${dist.jar}" toDir="${darkstar.deploy.dir}"/>
         
         <echo message="Copying batch file to Darkstar directory"/>
         <copy toDir="${darkstar.home.dir}/..">
-            <fileset dir="conf" includes="/**.bat"/>
+            <fileset dir="conf" includes="**/*.bat"/>
         </copy>
 
         <echo message="Copying config files to Darkstar directory"/>
