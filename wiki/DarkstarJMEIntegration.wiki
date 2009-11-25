@@ -1,5 +1,4 @@
 #summary A very basic implementation of JME connecting to a Darkstar server.
-
 =Introduction=
 As part of my gaming project, I wanted to get JME interacting with a Darkstar server for a multiplayer game. Now that I've finished this part, I thought I'd share with you how I did it... Hope it helps !
 
@@ -79,7 +78,13 @@ On startup of the server, it's the `TestDarkstarAppListener` that starts us off.
 	
 So the server will start up, do some initialization, and create the locations channel. It then listens for new clients and add them to the locations channel straight away. Any location updates from any of the clients is thrown back down the same channel to *all* clients (reiterating that this includes the client who sent the message).
 
-This should be all we need.
+This should be all we need. So let's build it. Peform the following actions:
+
+  * Right-click on the "TestDarkstarServer" and click "Clean and Build".
+  * Check the output window. As well as compiling, you should see it copying the config files in to the right locations.
+  * Now go to your Darkstar home (eg `c:\darkstar`) and double-click the `startDarkstarTestServer.bat` file. It should now be running... Hooray!
+  
+You can use Ctrl+C to terminate the job. Clicking the `startDarkstarTestServer.bat` again will restart it, but this time it won't run the `initialize(...)` method, as it has stored all the bits (ie the channel) via persistence. It also throws a nasty exception, which I don't understand (*please let me know if you do!*) but does still load up.
 
 
 ==The JME Client==
@@ -97,3 +102,5 @@ Good, so that only leaves us with `TankGameState` and `DarkstarUpdater` left. Ph
 I'd like to discuss this one first, because although it gets created and started by the `TankGameState`, it is doing the grunt work of communicating to/from the server.
 
 It was intended to be a singleton class (well, it still is) but I've ended up needing to pass parameters to it first time round. Therefore, it has two `getInstance(...)` methods. One
+
+*MENTION THE DARKSTAR CONSTANTS FOR HOST*
