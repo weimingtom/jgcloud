@@ -96,7 +96,7 @@ You can use Ctrl+C to terminate the job. Clicking the `startDarkstarTestServer.b
 
 This code is a little more involved, so I'd like to get a few of the basic classes summarised:
 
-  * `TankController` is a standard `Controller` class for my tank node. Nothing special here, standard implementation.
+  * `TankController` is a standard keyboard/mouse `Controller` class for my tank node. Nothing special here, standard implementation.
   * `PlayerDetails` is a bean that represents the location/rotation of a remote player. The idea is that the `DarkstarUpdater` thread (discussed below) creates an instance of this for as each player location arrives and places it on a queue for processing. It will then be the job of the main GPL thread to position our remote players in the scene.
   * `DarkstarConstants` contains some default values and such that the `DarkstarUpdater` will use. One important constant is `DARKSTAR_SERVER_HOST`. You will want to set this to the IP address where you're running the Darkstar server. If you're going to do everything on one machine, then set it to `localhost`. I'm lucky and have a laptop so had the server running on that and a couple of JME clients running on my main PC.
 
@@ -108,11 +108,13 @@ I'd like to discuss this one first, because although it gets created and started
 
 It was intended to be a singleton class (well, it still is) but I've ended up needing to pass parameters to it first time round. Therefore, it has two `getInstance(...)` methods. One that you call the first time `getInstance(Node myTank)` which does the initialization. Subsequent calls are done via `getInstance()`
 
-There's a bit of bouncing to/from the server on login. Our class calls `simpleClient.login(...)` with the host and port set as properties. Provided we're connected, the server then calls `getPasswordAuthentication()` and we are required to return a `PasswordAuthentication` object, which is basically just a username and password bean. If all has gone well, then the server calls `loggedIn()`. If it failed to login, then the server will call `loginFailed(String reason)`. This is also called if the `simpleClient.login(...)` couldn't get a connection to the server in the first place.
+There's a bit of bouncing to/from the server on login. Our class calls `simpleClient.login(...)` with the host and port set as properties. Provided we're connected, the server then calls `getPasswordAuthentication()` and we are required to return a `PasswordAuthentication` object, which is basically just a username and password bean. If all has gone well, then the server calls `loggedIn()`. We will also get a message telling us we've joined the `PLAYER_LOCATIONS_CHANNEL`.
+
+If it failed to login, then the server will call `loginFailed(String reason)`. This is also called if the `simpleClient.login(...)` couldn't get a connection to the server in the first place.
 
 So assuming we're connected, I update a boolean to let the thread know it can do its stuff. If you look at the `run()` method, you'll see that I do a check to ensure we're logged in and connected to the `PLAYER_LOCATIONS_CHANNEL`. If we are, then we create a String that is a key/value pair with player-name, location, rotation and client time. And we send that off to the channel via the `send(encodeString(message))` method. We have to encode the message as a byte strem, which is why we call the `encodeString(message)`. This busily chugs along, sending location messages to the server, sleeps and then repeats.
 
-Great, so we're letting the server know where we are. But... We want to know where other people are too. As explained above, we're definitely going to get messages back on the channel because the server sends back location messsages to ALL clients on the channel INCLUDING the client that sent it. 
+Great, so we're letting the server know where we are. But... We want to know where other people are too. As explained above, we're definitely going to get messages back on the channel because the server sends back location messsages to ALL clients on the channel INCLUDING the client that sent it (if you think I haven't mentioned this before, then you're not reading hard enough!). 
 
 It's the `receivedMessage(ClientChannel clientChannel, ByteBuffer message)` method that handles channel messages back from the server. Because there's only one channel right now, we know it's our `PLAYER_LOCATIONS_CHANNEL`. We also know the format of the message, as it's consistent (and we just sent one!). So I pull that message back again in to a readable key/value pair `Map` via the `parseMessage(...)` method. I then turn this in to a `PlayerDetails` object. This is a nice representation of a location for our purposes. Finally, we simply add this new information to a static queue (`playerDetailsQueue`) that our JME client can retrieve as and when it's ready. Note that we DON'T do this if the location information was from the same client that sent it.
 
@@ -139,11 +141,17 @@ We've come a long way, and we should now be ready to test this all out. Excited?
   # Clean and build the !DarkstarJME project.
   # Right-click the !DarkstarJME project and click "Run".
   # If everything has gone OK, you should see a tank and an arena. Use the arrow keys to move around.
-  # Alt-tab back to Netbeans. Check the logging. You should see a `Login successful` message saying it connected OK. If not, get this sorted!
+  # Alt-tab back to Netbeans. Check the logging. You should see a `Login successful` and `Joined Channel PLAYER_LOCATIONS` message saying it connected OK. If not, get this sorted!
   # If it has worked, do another "Run". Both instances should have two boxes :)
-
+  # With only one PC, it's going to be hard to see real-time movement, so if you're lucky and have two, I suggest having the faster PC running the Darkstar server and a client, and having another PC connecting to the server remotely. 
 ----
 =Conclusion=
 First of all, I hope this tutorial was useful. Secondly, I hope it worked for you without too much fuss. Let me know if you have difficulties (e-mail at the top), and I'll try my best to look at it. 
 
 Thanks for reading...
+----
+=Help needed!=
+If you found this useful, and are prepared to help me out, I'd like to add the following functionality:
+
+  * *Collision detection:* You'll notice that the walls won't stop you! I'm having a few issues getting this working properly.
+  * *Interpolation/Dead reckoning:* Movement looks clunky right now. I would like to implement a smoothing algorithm of some sort. One that is going to handle the firing of bullets later. 
