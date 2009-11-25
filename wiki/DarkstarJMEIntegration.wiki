@@ -1,10 +1,13 @@
 #summary A very basic implementation of JME connecting to a Darkstar server.
+#labels Phase-Implementation,Featured
 =Introduction=
 As part of my gaming project, I wanted to get JME interacting with a Darkstar server for a multiplayer game. Now that I've finished this part, I thought I'd share with you how I did it... Hope it helps !
 
 This wiki is intended as a step-by-step runthrough of what you need, the code itself, and how to test it. I appreciate it's pretty large and will take you a few hours (probably) to complete. I would suggest taking your time and understand each piece before proceeding. Netbeans knowledge is a big advantage here. 
 
-I'd also appreciate any feedback on the code (my e-mail's at the top).
+The intended audience is those reasonably proficient in JME, but with little or no Darkstar experience.
+
+I myself am a newbie(ish) in both technologies, so I'd appreciate any feedback on the code (my e-mail's at the top).
 ----
 =Getting Started=
 
