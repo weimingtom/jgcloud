@@ -9,6 +9,7 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
 
+import com.jme.system.DisplaySystem;
 import java.util.logging.Logger;
 import static com.jgcloud.sandbox.jme.TankController.CubeAction.*;
 import static com.jme.input.KeyInput.*;
@@ -22,7 +23,7 @@ import static com.jme.input.controls.binding.MouseButtonBinding.*;
 public class TankController extends Controller {
     Logger logger = Logger.getLogger(TankController.class.getName());
 
-    enum CubeAction {FAST, LEFT, RIGHT, UP, DOWN, EXIT};
+    enum CubeAction {FAST, LEFT, RIGHT, UP, DOWN, SNAPSHOT, EXIT};
 
     private final static float TURN_SPEED = 2F;
     private final static float FORWARD_SPEED = 16F;
@@ -48,6 +49,7 @@ public class TankController extends Controller {
         bindKey(LEFT, KEY_LEFT);
         bindKey(RIGHT, KEY_RIGHT);
         bindKey(FAST, KEY_LSHIFT);
+        bindKey(SNAPSHOT, KEY_F12);
 
         //bind mouse buttons
         bindMouseButton(LEFT, LEFT_BUTTON);
@@ -76,6 +78,8 @@ public class TankController extends Controller {
         if (value(EXIT) > 0) {
             DarkstarUpdater.getInstance().serverLogout();
             System.exit(0); //OK, this is just a demo...
+        } else if (value(SNAPSHOT) > 0) {
+            DisplaySystem.getDisplaySystem().getRenderer().takeScreenShot("img-" + System.currentTimeMillis());
         }
 
         hAngle += TURN_SPEED * time * (value(LEFT) - value(RIGHT));
