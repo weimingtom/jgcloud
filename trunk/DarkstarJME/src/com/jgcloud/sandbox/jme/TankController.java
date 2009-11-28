@@ -5,6 +5,7 @@ import com.jme.input.controls.GameControl;
 import com.jme.input.controls.GameControlManager;
 import com.jme.input.controls.binding.KeyboardBinding;
 import com.jme.input.controls.binding.MouseButtonBinding;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
@@ -30,12 +31,16 @@ public class TankController extends Controller {
 
 
     private final Node node;
+    private Node walls;
+
     private final GameControlManager manager;
     private float vAngle = 0F;
     private float hAngle = 0F;
 
-    public TankController(Node node) {
+    public TankController(Node node, Node walls) {
         this.node = node;
+        this.walls = walls;
+
         this.manager = new GameControlManager();
 
         //create all actions
@@ -82,10 +87,14 @@ public class TankController extends Controller {
             DisplaySystem.getDisplaySystem().getRenderer().takeScreenShot("img-" + System.currentTimeMillis());
         }
 
+//        Vector3f origTranslation = node.getLocalTranslation().clone();
+//        Quaternion origRotation = node.getLocalRotation().clone();
+
         hAngle += TURN_SPEED * time * (value(LEFT) - value(RIGHT));
         node.getLocalRotation().fromAngles(vAngle, hAngle, 0f);
 
-        Vector3f newLocation = node.getLocalTranslation();
+
+        Vector3f newLocation = node.getLocalTranslation().clone();
 
         // I don't get this next line. What is getRotationColumn? value must be
         // between 0 and 2. I think 0=x, 1=y and 2=z... But I is baffled!
@@ -96,5 +105,13 @@ public class TankController extends Controller {
 //        newLocation.addLocal(direction.mult(time*FORWARD_SPEED*(value(DOWN) - value(UP))*(1+(2*value(FAST)))));
         newLocation.addLocal(direction.mult(speed));
         node.setLocalTranslation(newLocation);
+
+//        node.updateWorldBound();
+//        if (node.hasCollision(walls, false)) {
+//            origTranslation.subtractLocal(direction.mult(speed * 8));
+//            node.setLocalTranslation(origTranslation);
+//            node.setLocalRotation(origRotation);
+//            node.updateWorldBound();
+//        }
     }
 }

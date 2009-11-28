@@ -1,16 +1,17 @@
 package com.jgcloud.sandbox.jme;
 
 import com.jgcloud.sandbox.darkstar.DarkstarUpdater;
-import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.ChaseCamera;
+import com.jme.intersection.CollisionResults;
 import com.jme.light.PointLight;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Geometry;
 import com.jme.scene.Node;
 import com.jme.scene.Skybox;
 import com.jme.scene.Spatial;
@@ -45,12 +46,19 @@ public class TankGameState extends BasicGameState {
     private int WALL_HEIGHT = 10;
 
     private Node myTank;
+    private Node walls;
     private Node remotePlayersNode; // Node that contains the remote players.
 
     private Camera cam;
     private ChaseCamera chaseCamera;
     private Skybox skybox;
     private static StandardGame standardGame;
+
+   
+    // The TankCntroller sets these values, and the local update(...) method
+    // checks to see if we can move our tank there.
+    private Vector3f newTankTranslation;
+    private Quaternion newTankRotation;
 
     /**
      * The remotePlayers map gets updated by the DarkstarUpdater thread. This
@@ -61,7 +69,7 @@ public class TankGameState extends BasicGameState {
 
     public static void main(String[] args) {
         standardGame = new StandardGame("GameControl", StandardGame.GameType.GRAPHICAL, null);
-        standardGame.getSettings().setSamples(0);
+        standardGame.getSettings().setSamples(8);
         standardGame.start();
 
         GameState client = new TankGameState();
@@ -69,7 +77,6 @@ public class TankGameState extends BasicGameState {
         client.setActive(true);
 
         logger.info("TankGameState.main complete");
-        SimpleGame sg;
     }
 
 
@@ -133,7 +140,7 @@ public class TankGameState extends BasicGameState {
 
         rootNode.attachChild(floor);
         
-        Node walls = new Node("Walls");
+        walls = new Node("Walls");
 
         //load a texture for the walls
         TextureState wallTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
@@ -210,11 +217,11 @@ public class TankGameState extends BasicGameState {
         pitch90.fromAngleAxis(FastMath.PI/2, new Vector3f(1,0,0));
         tankGun.setLocalRotation(pitch90);
         tankGun.setLocalTranslation(0, 5, -8);
-
         tank.attachChild(tankGun);
-        tank.setModelBound(new BoundingBox());
 
+        tank.setModelBound(new BoundingBox());
         tank.updateModelBound();
+
         tank.updateWorldBound();
 
         return tank;
@@ -306,7 +313,7 @@ public class TankGameState extends BasicGameState {
      * Sets up the controller for our tank.
      */
     private void addController() {
-        getRootNode().addController(new TankController(myTank));
+        getRootNode().addController(new TankController(myTank, walls));
     }
 
 
