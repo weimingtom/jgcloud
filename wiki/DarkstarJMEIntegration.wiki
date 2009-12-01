@@ -97,7 +97,7 @@ You can use Ctrl+C to terminate the job. Clicking the `startDarkstarTestServer.b
 This code is a little more involved, so I'd like to get a few of the basic classes summarised:
 
   * `TankController` is a standard keyboard/mouse `Controller` class for my tank node. Nothing special here, standard implementation.
-  * `PlayerDetails` is a bean that represents the location/rotation of a remote player. The idea is that the `DarkstarUpdater` thread (discussed below) creates an instance of this for as each player location arrives and places it on a queue for processing. It will then be the job of the main GPL thread to position our remote players in the scene.
+  * `PlayerDetails` is a bean that represents the location/rotation of a remote player. The idea is that the `DarkstarUpdater` thread (discussed below) creates an instance of this as each player location arrives and places it on a queue for processing. It will then be the job of the main GPL thread to position our remote players in the scene.
   * `DarkstarConstants` contains some default values and such that the `DarkstarUpdater` will use. One important constant is `DARKSTAR_SERVER_HOST`. You will want to set this to the IP address where you're running the Darkstar server. If you're going to do everything on one machine, then set it to `localhost`. I'm lucky and have a laptop so had the server running on that and a couple of JME clients running on my main PC.
 
 Good, so that only leaves us with `TankGameState` and `DarkstarUpdater` left. Phew!
@@ -133,7 +133,11 @@ So you see that the `TankGameState` class isn't doing much new other than updati
 We've come a long way, and we should now be ready to test this all out. Excited? Terrified? Confused? Good. Here's a run-down of what you need to do.
 
 *!TestDarkstarServer Project:*
-  # Clean and Build the !TestDarkstarServer project (if you haven't already).
+  # Clean and Build the !TestDarkstarServer project (if you haven't already). You should now have the following files in the directories (where PDS_HOME is your Darkstar server root directory):
+    # PDS_HOME: startDarkstarTestServer.bat
+    # PDS_HOME/tutorial: !TestDarkstarServer.jar
+    # PDS_HOME/tutorial/conf: !TestDarkstarServer.boot
+    # PDS_HOME/tutorial/conf: !TestDarkstarServer.properties
   # Run the `startDarkstarTestServer.bat` file which will be in your Darkstar root directory.
 
 *DarkstarJME Project:*
