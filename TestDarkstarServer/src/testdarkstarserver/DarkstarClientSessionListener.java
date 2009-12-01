@@ -1,6 +1,7 @@
 package testdarkstarserver;
 
 import com.sun.sgs.app.AppContext;
+import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ClientSessionListener;
 import com.sun.sgs.app.ManagedReference;
@@ -89,6 +90,25 @@ public class DarkstarClientSessionListener implements ClientSessionListener, Ser
      */
     public void disconnected(boolean graceful) {
         logger.info("Session " + sessionName + " has logged out. graceful=" + graceful);
+//        Channel ch = AppContext.getChannelManager().getChannel(TestDarkstarAppListener.PLAYER_LOCATIONS_CHANNEL);
+//        ch.send(this.getSession(), encodeString("PN=" + sessionName + ",DISCONNECTED"));
+    }
+
+
+    /**
+     * Encodes the message in a format that's agreeable to the server.
+     *
+     * @param message The string to encode.
+     *
+     * @return A ByteBuffer representation of the String.
+     */
+    private ByteBuffer encodeString(String message) {
+        try {
+            return ByteBuffer.wrap(message.getBytes(TestDarkstarAppListener.MESSAGE_CHARSET));
+        } catch (UnsupportedEncodingException e) {
+            logger.severe("Required character set " + TestDarkstarAppListener.MESSAGE_CHARSET + " not found" + e);
+            return null;
+        }
     }
 
 
