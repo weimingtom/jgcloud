@@ -1,5 +1,6 @@
 package com.jgcloud.sandbox.jme;
 
+import com.jgcloud.sandbox.darkstar.DarkstarConstants;
 import com.jgcloud.sandbox.darkstar.DarkstarUpdater;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -73,7 +74,7 @@ public class TankGameState extends BasicGameState {
 
     public static void main(String[] args) {
         standardGame = new StandardGame("GameControl", StandardGame.GameType.GRAPHICAL, null);
-        standardGame.getSettings().setSamples(8);
+        standardGame.getSettings().setSamples(0);
         standardGame.start();
 
         GameState client = new TankGameState();
@@ -379,16 +380,15 @@ public class TankGameState extends BasicGameState {
                 dr.setStartRotation(remotePlayerTank.getLocalRotation());
                 dr.setFinishRotation(remotePlayerTank.getLocalRotation());
                 dr.setStartTimeMilis(System.currentTimeMillis());
-                dr.setFinishTimeMilis(System.currentTimeMillis()+200);
+                dr.setFinishTimeMilis(System.currentTimeMillis()+DarkstarConstants.LOCATION_UPDATE_INTERVAL_MS+25);
                 remotePlayers.put(playerDetails.getPlayerName(), dr);
             } else {
-//                DeadReckoner dr = remotePlayers.get(playerDetails.getPlayerName());
                 dr.setStartTranslation(dr.getCurrentTranslation());
                 dr.setFinishTranslation(playerDetails.getLocation());
                 dr.setStartRotation(dr.getCurrentRotation());
                 dr.setFinishRotation(playerDetails.getRotation());
                 dr.setStartTimeMilis(System.currentTimeMillis());
-                dr.setFinishTimeMilis(System.currentTimeMillis()+200);
+                dr.setFinishTimeMilis(System.currentTimeMillis()+DarkstarConstants.LOCATION_UPDATE_INTERVAL_MS+25);
             }
         }
 
@@ -403,15 +403,5 @@ public class TankGameState extends BasicGameState {
                 logger.severe("Player " + remotePlayer + " exists in remotPlayers but is not in remotePlayersNode");
             }
         }
-//              YES:    New player?
-//                  YES:    Add player
-//                          Create new dead reckoner
-//                          Add dead reckoner to existing hashmap
-//                  NO:     Update dead reckoner for existing player
-//              NO:     Do nothing with the dead reckoners
-//
-//          For each dead reckoner:
-//              Get new translation/rotation and apply it to the scene.
-//
     }
 }
