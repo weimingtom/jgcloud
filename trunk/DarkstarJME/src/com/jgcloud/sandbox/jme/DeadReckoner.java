@@ -39,8 +39,10 @@ public class DeadReckoner {
         } else {
             float percent = (currentTimeMillis-startTimeMillis) / (finishTimeMillis-startTimeMillis);
             Quaternion interpolatedRotation = new Quaternion();
-            // ?? Now what !
-            return finishRotation;
+            
+            // Not sure if slerp is right, but you never know !
+            interpolatedRotation.slerp(startRotation, finishRotation, percent);
+            return interpolatedRotation;
         }
     }
 
