@@ -4,14 +4,12 @@ import com.jgcloud.sandbox.darkstar.DarkstarUpdater;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.ChaseCamera;
-import com.jme.intersection.CollisionResults;
 import com.jme.light.PointLight;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Geometry;
 import com.jme.scene.Node;
 import com.jme.scene.Skybox;
 import com.jme.scene.Spatial;
@@ -65,7 +63,13 @@ public class TankGameState extends BasicGameState {
      * will then get handled by the update(...) method. ConcurrentHashMap is a
      * nice fast thread-safe map, just right for the job.
      */
-    private static Map<String,PlayerDetails> remotePlayers = new ConcurrentHashMap<String,PlayerDetails>();
+//    private static Map<String,PlayerDetails> remotePlayers = new ConcurrentHashMap<String,PlayerDetails>();
+
+    /**
+     * A map of remote players and their "dead reckoning" position.
+     *
+     */
+     private Map<String,DeadReckoner> remotePlayers = new ConcurrentHashMap<String,DeadReckoner>();
 
     public static void main(String[] args) {
         standardGame = new StandardGame("GameControl", StandardGame.GameType.GRAPHICAL, null);
@@ -107,7 +111,7 @@ public class TankGameState extends BasicGameState {
     }
 
 
-    public static Map<String,PlayerDetails> getRemotePlayers() {
+    public Map<String,DeadReckoner> getRemotePlayers() {
         return remotePlayers;
     }
 
@@ -327,31 +331,87 @@ public class TankGameState extends BasicGameState {
      * necessary.
      */
     private void updateRemotePlayerLocations() {
-        // First poll the playerDetailsQueue, if there's nothing there, then
-        // it will return null, otherwise we'll get some details about a 
-        // player.
+//        // First poll the playerDetailsQueue, if there's nothing there, then
+//        // it will return null, otherwise we'll get some details about a
+//        // player.
+//        PlayerDetails playerDetails = DarkstarUpdater.playerDetailsQueue.poll();
+//
+//        // If there's nothing on the queue, then there's nothing to do !
+//        if (playerDetails == null) {
+//            return;
+//        }
+//
+//        // Now we find that player on the remotePlayersNode.
+//        //
+//        // Node is a sub-class of spatial. The getChild() returns a spatial,
+//        // but that's ok for what we need to do here.
+//        Spatial remotePlayerTank = remotePlayersNode.getChild(playerDetails.getPlayerName());
+//
+//        // This might be a new player, so create it if it is.
+//        if (remotePlayerTank == null) {
+//            remotePlayerTank = createPlayer(playerDetails.getPlayerName());
+//            remotePlayersNode.attachChild(remotePlayerTank);
+//            getRootNode().updateRenderState();
+//        }
+//
+//        // Finally, we can now set its new location and rotation.
+//        remotePlayerTank.setLocalTranslation(playerDetails.getLocation());
+//        remotePlayerTank.setLocalRotation(playerDetails.getRotation());
+//
+
+
+//      New Pseudo-code
+//          Poll for one message
         PlayerDetails playerDetails = DarkstarUpdater.playerDetailsQueue.poll();
 
-        // If there's nothing on the queue, then there's nothing to do !
-        if (playerDetails == null) {
-            return;
+//          New message?
+        if (playerDetails != null) {
+//            Spatial remotePlayerTank = remotePlayersNode.getChild(playerDetails.getPlayerName());
+            DeadReckoner dr = remotePlayers.get(playerDetails.getPlayerName());
+
+            if (dr == null) {
+                Spatial remotePlayerTank = createPlayer(playerDetails.getPlayerName());
+                remotePlayersNode.attachChild(remotePlayerTank);
+                getRootNode().updateRenderState();
+                dr = new DeadReckoner();
+                dr.setStartTranslation(playerDetails.getLocation());
+                dr.setFinishTranslation(remotePlayerTank.getLocalTranslation());
+                dr.setStartRotation(remotePlayerTank.getLocalRotation());
+                dr.setFinishRotation(remotePlayerTank.getLocalRotation());
+                dr.setStartTimeMilis(System.currentTimeMillis());
+                dr.setFinishTimeMilis(System.currentTimeMillis()+200);
+                remotePlayers.put(playerDetails.getPlayerName(), dr);
+            } else {
+//                DeadReckoner dr = remotePlayers.get(playerDetails.getPlayerName());
+                dr.setStartTranslation(dr.getCurrentTranslation());
+                dr.setFinishTranslation(playerDetails.getLocation());
+                dr.setStartRotation(dr.getCurrentRotation());
+                dr.setFinishRotation(playerDetails.getRotation());
+                dr.setStartTimeMilis(System.currentTimeMillis());
+                dr.setFinishTimeMilis(System.currentTimeMillis()+200);
+            }
         }
 
-        // Now we find that player on the remotePlayersNode.
-        //
-        // Node is a sub-class of spatial. The getChild() returns a spatial,
-        // but that's ok for what we need to do here.
-        Spatial remotePlayerTank = remotePlayersNode.getChild(playerDetails.getPlayerName());
+        for (String remotePlayer : remotePlayers.keySet()) {
+            Spatial remotePlayerTank = remotePlayersNode.getChild(remotePlayer);
 
-        // This might be a new player, so create it if it is.
-        if (remotePlayerTank == null) {
-            remotePlayerTank = createPlayer(playerDetails.getPlayerName());
-            remotePlayersNode.attachChild(remotePlayerTank);
-            getRootNode().updateRenderState();
+            if (remotePlayerTank != null) {
+                DeadReckoner dr = remotePlayers.get(remotePlayer);
+                remotePlayerTank.setLocalTranslation(dr.getCurrentTranslation());
+                remotePlayerTank.setLocalRotation(dr.getCurrentRotation());
+            } else {
+                logger.severe("Player " + remotePlayer + " exists in remotPlayers but is not in remotePlayersNode");
+            }
         }
-
-        // Finally, we can now set its new location and rotation.
-        remotePlayerTank.setLocalTranslation(playerDetails.getLocation());
-        remotePlayerTank.setLocalRotation(playerDetails.getRotation());
+//              YES:    New player?
+//                  YES:    Add player
+//                          Create new dead reckoner
+//                          Add dead reckoner to existing hashmap
+//                  NO:     Update dead reckoner for existing player
+//              NO:     Do nothing with the dead reckoners
+//
+//          For each dead reckoner:
+//              Get new translation/rotation and apply it to the scene.
+//
     }
 }
