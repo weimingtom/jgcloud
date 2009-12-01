@@ -332,42 +332,13 @@ public class TankGameState extends BasicGameState {
      * necessary.
      */
     private void updateRemotePlayerLocations() {
-//        // First poll the playerDetailsQueue, if there's nothing there, then
-//        // it will return null, otherwise we'll get some details about a
-//        // player.
-//        PlayerDetails playerDetails = DarkstarUpdater.playerDetailsQueue.poll();
-//
-//        // If there's nothing on the queue, then there's nothing to do !
-//        if (playerDetails == null) {
-//            return;
-//        }
-//
-//        // Now we find that player on the remotePlayersNode.
-//        //
-//        // Node is a sub-class of spatial. The getChild() returns a spatial,
-//        // but that's ok for what we need to do here.
-//        Spatial remotePlayerTank = remotePlayersNode.getChild(playerDetails.getPlayerName());
-//
-//        // This might be a new player, so create it if it is.
-//        if (remotePlayerTank == null) {
-//            remotePlayerTank = createPlayer(playerDetails.getPlayerName());
-//            remotePlayersNode.attachChild(remotePlayerTank);
-//            getRootNode().updateRenderState();
-//        }
-//
-//        // Finally, we can now set its new location and rotation.
-//        remotePlayerTank.setLocalTranslation(playerDetails.getLocation());
-//        remotePlayerTank.setLocalRotation(playerDetails.getRotation());
-//
-
-
-//      New Pseudo-code
-//          Poll for one message
+        // First poll the playerDetailsQueue, if there's nothing there, then
+        // it will return null, otherwise we'll get some details about a
+        // player.
         PlayerDetails playerDetails = DarkstarUpdater.playerDetailsQueue.poll();
 
-//          New message?
+
         if (playerDetails != null) {
-//            Spatial remotePlayerTank = remotePlayersNode.getChild(playerDetails.getPlayerName());
             DeadReckoner dr = remotePlayers.get(playerDetails.getPlayerName());
 
             if (dr == null) {
