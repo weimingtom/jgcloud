@@ -10,14 +10,17 @@ import java.util.logging.Logger;
  * server will be responsible for telling us where the remote player will be in
  * the future, and at what point (on the system clock) they're going to be
  * there. Using this information, you can call the getCurrentTranslation()
- * and
- * @author Richard
+ * ang getCurrentRotation() methods at certain points to see where the remote
+ * player should be.
+ * 
+ * @author Richard Hawkes
  */
 public class DeadReckoner {
 
     private Vector3f startTranslation, finishTranslation;
     private Quaternion startRotation, finishRotation;
     private long startTimeMillis, finishTimeMillis;
+
     private Logger logger = Logger.getLogger(DeadReckoner.class.getName());
 
     public Vector3f getCurrentTranslation() {
