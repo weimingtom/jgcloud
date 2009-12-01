@@ -2,6 +2,7 @@ package com.jgcloud.sandbox.jme;
 
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import java.util.logging.Logger;
 
 /**
  * A utility class that is going to interpolate a remote players estimated
@@ -17,19 +18,22 @@ public class DeadReckoner {
     private Vector3f startTranslation, finishTranslation;
     private Quaternion startRotation, finishRotation;
     private long startTimeMillis, finishTimeMillis;
+    private Logger logger = Logger.getLogger(DeadReckoner.class.getName());
 
     public Vector3f getCurrentTranslation() {
         long currentTimeMillis = System.currentTimeMillis();
 
         if (currentTimeMillis > finishTimeMillis) {
+
             return finishTranslation;
         } else {
-            float percent = (currentTimeMillis-startTimeMillis) / (finishTimeMillis-startTimeMillis);
+            float percent = ((float)(currentTimeMillis-startTimeMillis)) / ((float)(finishTimeMillis-startTimeMillis));
             Vector3f interpolatedTranslation = new Vector3f();
             interpolatedTranslation.interpolate(startTranslation, finishTranslation, percent);
             return interpolatedTranslation;
         }
     }
+
 
     public Quaternion getCurrentRotation() {
         long currentTimeMillis = System.currentTimeMillis();
@@ -37,7 +41,7 @@ public class DeadReckoner {
         if (currentTimeMillis > finishTimeMillis) {
             return finishRotation;
         } else {
-            float percent = (currentTimeMillis-startTimeMillis) / (finishTimeMillis-startTimeMillis);
+            float percent = ((float)(currentTimeMillis-startTimeMillis)) / ((float)(finishTimeMillis-startTimeMillis));
             Quaternion interpolatedRotation = new Quaternion();
             
             // Not sure if slerp is right, but you never know !
