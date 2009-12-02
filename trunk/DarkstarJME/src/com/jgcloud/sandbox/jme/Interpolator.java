@@ -15,19 +15,43 @@ import java.util.logging.Logger;
  * 
  * @author Richard Hawkes
  */
-public class DeadReckoner {
+public class Interpolator {
+
+    private Logger logger = Logger.getLogger(Interpolator.class.getName());
 
     private Vector3f startTranslation, finishTranslation;
     private Quaternion startRotation, finishRotation;
     private long startTimeMillis, finishTimeMillis;
 
-    private Logger logger = Logger.getLogger(DeadReckoner.class.getName());
+    public Interpolator() {
+        this (new Vector3f(), new Vector3f(), new Quaternion(), new Quaternion(), 0, 0);
+    }
+    
 
+    public Interpolator(Vector3f startTranslation, Vector3f finishTranslation,
+            Quaternion startRotation, Quaternion finishRotation,
+            long startTimeMillis, long finishTimeMillis) {
+        this.startTranslation = startTranslation;
+        this.finishTranslation = finishTranslation;
+        this.startRotation = startRotation;
+        this.finishRotation = finishRotation;
+        this.startTimeMillis = startTimeMillis;
+        this.finishTimeMillis = finishTimeMillis;
+    }
+
+
+    /**
+     * Because we know the start and end translation, we can return
+     * whereabouts the node should be at the time this method is run. If the
+     * system time is greater than "finishTimeMillis", then the finish
+     * location is returned.
+     *
+     * @return The estimated current translation for the node.
+     */
     public Vector3f getCurrentTranslation() {
         long currentTimeMillis = System.currentTimeMillis();
 
         if (currentTimeMillis > finishTimeMillis) {
-
             return finishTranslation;
         } else {
             float percent = ((float)(currentTimeMillis-startTimeMillis)) / ((float)(finishTimeMillis-startTimeMillis));
@@ -38,6 +62,14 @@ public class DeadReckoner {
     }
 
 
+    /**
+     * Because we know the start and end rotation, we can return
+     * whereabouts the node should rotated at the time this method is run. If
+     * the system time is greater than "finishTimeMillis", then the finish
+     * rotation is returned.
+     *
+     * @return The estimated current rotation for the node.
+     */
     public Quaternion getCurrentRotation() {
         long currentTimeMillis = System.currentTimeMillis();
 
