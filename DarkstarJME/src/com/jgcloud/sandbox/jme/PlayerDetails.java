@@ -36,14 +36,26 @@ public class PlayerDetails {
      * @param rw
      * @param lastUpdateTimeMills
      */
-    public PlayerDetails(String playerName, float lx, float ly, float lz, float rx, float ry, float rz, float rw, long lastUpdateTimeMills) {
+    public PlayerDetails(String playerName, float lx, float ly, float lz, float rx, float ry, float rz, float rw, long lastUpdateTimeMillis) {
         this(
             playerName,
             new Vector3f(lx, ly, lz),
             new Quaternion(rx, ry, rz, rw),
-            lastUpdateTimeMills
+            lastUpdateTimeMillis
         );
     }
+
+
+    /**
+     * A stub constructor. Creates an empty Vector3f and Quaternion for location
+     * and rotation. Sets lastUpdateTimeMillis to 0 (zero).
+     *
+     * @param playerName The name of the player.
+     */
+    public PlayerDetails(String playerName) {
+        this(playerName, new Vector3f(), new Quaternion(), 0);
+    }
+
 
     /**
      * @return the playerName

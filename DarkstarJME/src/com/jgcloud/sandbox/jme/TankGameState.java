@@ -54,23 +54,10 @@ public class TankGameState extends BasicGameState {
     private static StandardGame standardGame;
 
    
-    // The TankCntroller sets these values, and the local update(...) method
-    // checks to see if we can move our tank there.
-    private Vector3f newTankTranslation;
-    private Quaternion newTankRotation;
-
-    /**
-     * The remotePlayers map gets updated by the DarkstarUpdater thread. This
-     * will then get handled by the update(...) method. ConcurrentHashMap is a
-     * nice fast thread-safe map, just right for the job.
-     */
-//    private static Map<String,PlayerDetails> remotePlayers = new ConcurrentHashMap<String,PlayerDetails>();
-
-    /**
-     * A map of remote players and their "dead reckoning" position.
-     *
-     */
-     private Map<String,DeadReckoner> remotePlayers = new ConcurrentHashMap<String,DeadReckoner>();
+   /**
+     * A map of remote players and their "interpolated" position.
+      */
+     private Map<String,Interpolator> remotePlayers = new ConcurrentHashMap<String,Interpolator>();
 
     public static void main(String[] args) {
         standardGame = new StandardGame("GameControl", StandardGame.GameType.GRAPHICAL, null);
@@ -112,7 +99,7 @@ public class TankGameState extends BasicGameState {
     }
 
 
-    public Map<String,DeadReckoner> getRemotePlayers() {
+    public Map<String,Interpolator> getRemotePlayers() {
         return remotePlayers;
     }
 
@@ -147,7 +134,7 @@ public class TankGameState extends BasicGameState {
         
         walls = new Node("Walls");
 
-        //load a texture for the walls
+        // load a texture for the walls
         TextureState wallTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         Texture wallTexture = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
         wallTexture.setWrap(Texture.WrapMode.Repeat);
@@ -263,6 +250,7 @@ public class TankGameState extends BasicGameState {
         chaseCamera = new ChaseCamera(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), myTank, props);
     }
 
+
     /**
      * Create a node that will hold all of the remote players.
      */
@@ -315,7 +303,7 @@ public class TankGameState extends BasicGameState {
 
 
     /**
-     * Sets up the controller for our tank.
+     * Sets up the keyboard/mouse controller for our tank.
      */
     private void addController() {
         getRootNode().addController(new TankController(myTank, walls));
@@ -334,26 +322,36 @@ public class TankGameState extends BasicGameState {
     private void updateRemotePlayerLocations() {
         // First poll the playerDetailsQueue, if there's nothing there, then
         // it will return null, otherwise we'll get some details about a
-        // player.
+        // remote player.
         PlayerDetails playerDetails = DarkstarUpdater.playerDetailsQueue.poll();
 
-
+        // If there are some details, then we will process them now.
         if (playerDetails != null) {
-            DeadReckoner dr = remotePlayers.get(playerDetails.getPlayerName());
+            // Check to see if this is details of an existing player on our
+            // "remotePlayers" map, or whether it's a player we haven't seen
+            // before.
+            Interpolator dr = remotePlayers.get(playerDetails.getPlayerName());
 
+            // If the "get" returned null, then this is a new player. Set them
+            // up.
             if (dr == null) {
                 Spatial remotePlayerTank = createPlayer(playerDetails.getPlayerName());
                 remotePlayersNode.attachChild(remotePlayerTank);
                 getRootNode().updateRenderState();
-                dr = new DeadReckoner();
+
+                // Set up a new "Interpolator" with the same start and end
+                // point (because we don't know where they're going yet).
+                dr = new Interpolator();
                 dr.setStartTranslation(playerDetails.getLocation());
-                dr.setFinishTranslation(remotePlayerTank.getLocalTranslation());
-                dr.setStartRotation(remotePlayerTank.getLocalRotation());
-                dr.setFinishRotation(remotePlayerTank.getLocalRotation());
+                dr.setFinishTranslation(playerDetails.getLocation());
+                dr.setStartRotation(playerDetails.getRotation());
+                dr.setFinishRotation(playerDetails.getRotation());
                 dr.setStartTimeMilis(System.currentTimeMillis());
-                dr.setFinishTimeMilis(System.currentTimeMillis()+DarkstarConstants.LOCATION_UPDATE_INTERVAL_MS+25);
+                dr.setFinishTimeMilis(System.currentTimeMillis());
                 remotePlayers.put(playerDetails.getPlayerName(), dr);
             } else {
+                // If we're here it's because the player already existed. We
+                // should therefore update their "Interpolator" instance.
                 dr.setStartTranslation(dr.getCurrentTranslation());
                 dr.setFinishTranslation(playerDetails.getLocation());
                 dr.setStartRotation(dr.getCurrentRotation());
@@ -363,14 +361,20 @@ public class TankGameState extends BasicGameState {
             }
         }
 
+        // Right, with our Interpolation out of the way, we can loop through
+        // the players in our map, and calculate their new interpolated
+        // positions.
         for (String remotePlayer : remotePlayers.keySet()) {
             Spatial remotePlayerTank = remotePlayersNode.getChild(remotePlayer);
 
+            // remotePlayerTank should not be null, but putting a check in
+            // here, just in case.
             if (remotePlayerTank != null) {
-                DeadReckoner dr = remotePlayers.get(remotePlayer);
+                Interpolator dr = remotePlayers.get(remotePlayer);
                 remotePlayerTank.setLocalTranslation(dr.getCurrentTranslation());
                 remotePlayerTank.setLocalRotation(dr.getCurrentRotation());
             } else {
+                // Like I say, we should never get here.
                 logger.severe("Player " + remotePlayer + " exists in remotPlayers but is not in remotePlayersNode");
             }
         }
