@@ -5,7 +5,6 @@ import com.jme.input.controls.GameControl;
 import com.jme.input.controls.GameControlManager;
 import com.jme.input.controls.binding.KeyboardBinding;
 import com.jme.input.controls.binding.MouseButtonBinding;
-import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
@@ -104,7 +103,24 @@ public class TankController extends Controller {
         speed *= 1 + (2 * value(FAST)); // Double the speed if the fast button is being pressed.
 //        newLocation.addLocal(direction.mult(time*FORWARD_SPEED*(value(DOWN) - value(UP))*(1+(2*value(FAST)))));
         newLocation.addLocal(direction.mult(speed));
-        node.setLocalTranslation(newLocation);
+
+        // The next two "if" statements ensure it stays inside the arena. I
+        // seperate them out, so that the tank will still move sideways if
+        // it hits a wall.
+
+        if (
+          newLocation.getZ() > (0 - (TankGameState.FLOOR_LENGTH/2F) + 12) &&
+          newLocation.getZ() < (TankGameState.FLOOR_LENGTH/2F) - 12) {
+            node.setLocalTranslation(node.getLocalTranslation().getX(), node.getLocalTranslation().getY(), newLocation.getZ());
+        }
+
+        if (
+          newLocation.getX() > (0 - (TankGameState.FLOOR_WIDTH/2F) + 12) &&
+          newLocation.getX() < (TankGameState.FLOOR_WIDTH/2F) - 12) {
+            node.setLocalTranslation(newLocation.getX(), node.getLocalTranslation().getY(), node.getLocalTranslation().getZ());
+        }
+
+//        node.setLocalTranslation(newLocation);
 
 //        node.updateWorldBound();
 //        if (node.hasCollision(walls, false)) {
