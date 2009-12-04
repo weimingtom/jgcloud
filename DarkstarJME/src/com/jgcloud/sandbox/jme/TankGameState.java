@@ -40,11 +40,13 @@ import java.util.logging.Logger;
 public class TankGameState extends BasicGameState {
     private static final Logger logger = Logger.getLogger(TankGameState.class.getName());
 
-    private int FLOOR_WIDTH = 200;
-    private int FLOOR_HEIGHT = 400;
-    private int WALL_HEIGHT = 10;
+    protected static int FLOOR_WIDTH = 200;
+    protected static int FLOOR_LENGTH = 400;
+    protected static int WALL_HEIGHT = 10;
 
     private Node myTank;
+    private int currentSpeed;
+
     private Node walls;
     private Node remotePlayersNode; // Node that contains the remote players.
 
@@ -81,11 +83,16 @@ public class TankGameState extends BasicGameState {
         cam = DisplaySystem.getDisplaySystem().getRenderer().getCamera();
         init();
 
-        Thread t = new Thread(DarkstarUpdater.getInstance(myTank));
-        t.start();
+        Thread darkstarThread = new Thread(DarkstarUpdater.getInstance(myTank));
+        darkstarThread.setName("DarkstarUpdater");
+        darkstarThread.start();
     }
 
 
+    /**
+     * Sets up the arena, tank, controller etc. Basically gets everything
+     * visible for us.
+     */
     protected void init() {
         createArena();
         createMyTank();
@@ -117,7 +124,7 @@ public class TankGameState extends BasicGameState {
         pitch90.fromAngleAxis(FastMath.PI/2, new Vector3f(1,0,0));
 
 
-        Quad floor = new Quad("Floor", FLOOR_WIDTH, FLOOR_HEIGHT);
+        Quad floor = new Quad("Floor", FLOOR_WIDTH, FLOOR_LENGTH);
         floor.setLocalRotation(pitch90);
 
         //load a texture for the floor
@@ -148,25 +155,25 @@ public class TankGameState extends BasicGameState {
         // The back wall does not need to be rotated. It defaults to vertical.
         Quad backWall = new Quad("Back Wall", FLOOR_WIDTH, WALL_HEIGHT);
         walls.attachChild(backWall);
-        backWall.setLocalTranslation(0, WALL_HEIGHT/2, FLOOR_HEIGHT/2);
+        backWall.setLocalTranslation(0, WALL_HEIGHT/2, FLOOR_LENGTH/2);
         backWall.setModelBound(new BoundingBox());
         backWall.updateModelBound();
 
         // The front wall does not need to be rotated. It defaults to vertical.
         Quad frontWall = new Quad("Front Wall", FLOOR_WIDTH, WALL_HEIGHT);
         walls.attachChild(frontWall);
-        frontWall.setLocalTranslation(0, WALL_HEIGHT/2, 0 - (FLOOR_HEIGHT/2));
+        frontWall.setLocalTranslation(0, WALL_HEIGHT/2, 0 - (FLOOR_LENGTH/2));
         frontWall.setModelBound(new BoundingBox());
         frontWall.updateModelBound();
 
-        Quad leftWall = new Quad("Left Wall", FLOOR_HEIGHT, WALL_HEIGHT);
+        Quad leftWall = new Quad("Left Wall", FLOOR_LENGTH, WALL_HEIGHT);
         walls.attachChild(leftWall);
         leftWall.setLocalRotation(yaw90);
         leftWall.setLocalTranslation(0-(FLOOR_WIDTH/2), WALL_HEIGHT/2, 0);
         leftWall.setModelBound(new BoundingBox());
         leftWall.updateModelBound();
 
-        Quad rightWall = new Quad("Right Wall", FLOOR_HEIGHT, WALL_HEIGHT);
+        Quad rightWall = new Quad("Right Wall", FLOOR_LENGTH, WALL_HEIGHT);
         walls.attachChild(rightWall);
         rightWall.setLocalRotation(yaw90);
         rightWall.setLocalTranslation((FLOOR_WIDTH/2), WALL_HEIGHT/2, 0);
@@ -252,7 +259,8 @@ public class TankGameState extends BasicGameState {
 
 
     /**
-     * Create a node that will hold all of the remote players.
+     * Create a node that will hold all of the remote players. This should
+     * give us quicker retrieval of the tank nodes when we need to update them.
      */
     private void createRemotePlayersNode() {
         remotePlayersNode = new Node("RemotePlayers");
@@ -378,5 +386,19 @@ public class TankGameState extends BasicGameState {
                 logger.severe("Player " + remotePlayer + " exists in remotPlayers but is not in remotePlayersNode");
             }
         }
+    }
+
+    /**
+     * @return the currentSpeed
+     */
+    public int getCurrentSpeed() {
+        return currentSpeed;
+    }
+
+    /**
+     * @param currentSpeed the currentSpeed to set
+     */
+    public void setCurrentSpeed(int currentSpeed) {
+        this.currentSpeed = currentSpeed;
     }
 }
