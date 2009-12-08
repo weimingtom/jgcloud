@@ -78,7 +78,7 @@
         
         <echo message="Copying batch file to Darkstar directory"/>
         <copy toDir="${darkstar.home.dir}/..">
-            <fileset dir="conf" includes="/**.bat"/>
+            <fileset dir="conf" includes="**.bat"/>
         </copy>
 
         <echo message="Copying config files to Darkstar directory"/>
