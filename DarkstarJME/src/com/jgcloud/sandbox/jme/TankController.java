@@ -5,6 +5,7 @@ import com.jme.input.controls.GameControl;
 import com.jme.input.controls.GameControlManager;
 import com.jme.input.controls.binding.KeyboardBinding;
 import com.jme.input.controls.binding.MouseButtonBinding;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
@@ -86,14 +87,19 @@ public class TankController extends Controller {
             DisplaySystem.getDisplaySystem().getRenderer().takeScreenShot("img-" + System.currentTimeMillis());
         }
 
-//        Vector3f origTranslation = node.getLocalTranslation().clone();
-//        Quaternion origRotation = node.getLocalRotation().clone();
-
-        hAngle += TURN_SPEED * time * (value(LEFT) - value(RIGHT));
-        node.getLocalRotation().fromAngles(vAngle, hAngle, 0f);
-
+        node.updateWorldBound();
+        node.updateGeometricState(0, true);
+        Vector3f origTranslation = node.getLocalTranslation().clone();
+        Quaternion origRotation = node.getLocalRotation().clone();
 
         Vector3f newLocation = node.getLocalTranslation().clone();
+        Quaternion newRotation = node.getLocalRotation().clone();
+
+        float turnAmount = TURN_SPEED * time * (value(LEFT) - value(RIGHT));
+        hAngle += turnAmount;
+        newRotation.fromAngles(vAngle, hAngle, 0f);
+        node.getLocalRotation().set(newRotation);
+        node.updateGeometricState(0, true);
 
         // I don't get this next line. What is getRotationColumn? value must be
         // between 0 and 2. I think 0=x, 1=y and 2=z... But I is baffled!
@@ -101,33 +107,16 @@ public class TankController extends Controller {
 
         float speed = time * FORWARD_SPEED * (value(DOWN) - value(UP));
         speed *= 1 + (2 * value(FAST)); // Double the speed if the fast button is being pressed.
-//        newLocation.addLocal(direction.mult(time*FORWARD_SPEED*(value(DOWN) - value(UP))*(1+(2*value(FAST)))));
         newLocation.addLocal(direction.mult(speed));
 
-        // The next two "if" statements ensure it stays inside the arena. I
-        // seperate them out, so that the tank will still move sideways if
-        // it hits a wall.
-
-        if (
-          newLocation.getZ() > (0 - (TankGameState.FLOOR_LENGTH/2F) + 12) &&
-          newLocation.getZ() < (TankGameState.FLOOR_LENGTH/2F) - 12) {
-            node.setLocalTranslation(node.getLocalTranslation().getX(), node.getLocalTranslation().getY(), newLocation.getZ());
+        node.getLocalTranslation().set(newLocation);
+        node.updateGeometricState(0, true);
+        
+        if (node.hasCollision(walls, true)) {
+            node.getLocalTranslation().set(origTranslation);
+            node.getLocalRotation().set(origRotation);
+            hAngle -= turnAmount;
+            node.updateGeometricState(0, true);
         }
-
-        if (
-          newLocation.getX() > (0 - (TankGameState.FLOOR_WIDTH/2F) + 12) &&
-          newLocation.getX() < (TankGameState.FLOOR_WIDTH/2F) - 12) {
-            node.setLocalTranslation(newLocation.getX(), node.getLocalTranslation().getY(), node.getLocalTranslation().getZ());
-        }
-
-//        node.setLocalTranslation(newLocation);
-
-//        node.updateWorldBound();
-//        if (node.hasCollision(walls, false)) {
-//            origTranslation.subtractLocal(direction.mult(speed * 8));
-//            node.setLocalTranslation(origTranslation);
-//            node.setLocalRotation(origRotation);
-//            node.updateWorldBound();
-//        }
     }
 }
