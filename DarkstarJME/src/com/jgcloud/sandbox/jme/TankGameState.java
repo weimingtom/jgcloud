@@ -11,7 +11,6 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
-import com.jme.scene.Skybox;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Capsule;
@@ -39,16 +38,16 @@ import java.util.logging.Logger;
 public class TankGameState extends BasicGameState {
     private static final Logger logger = Logger.getLogger(TankGameState.class.getName());
 
-    private int FLOOR_WIDTH = 200;
-    private int FLOOR_HEIGHT = 400;
-    private int WALL_HEIGHT = 10;
+    protected static int FLOOR_WIDTH = 200;
+    protected static int FLOOR_LENGTH = 400;
+    protected static int WALL_HEIGHT = 10;
 
     private Node myTank;
     private Node remotePlayersNode; // Node that contains the remote players.
+    private Node walls;
 
     private Camera cam;
     private ChaseCamera chaseCamera;
-    private Skybox skybox;
     private static StandardGame standardGame;
 
     /**
@@ -89,7 +88,6 @@ public class TankGameState extends BasicGameState {
         createArena();
         createMyTank();
         createChaseCamera();
-        createSkybox();
         createLighting();
         addController();
         createRemotePlayersNode();
@@ -116,7 +114,7 @@ public class TankGameState extends BasicGameState {
         pitch90.fromAngleAxis(FastMath.PI/2, new Vector3f(1,0,0));
 
 
-        Quad floor = new Quad("Floor", FLOOR_WIDTH, FLOOR_HEIGHT);
+        Quad floor = new Quad("Floor", FLOOR_WIDTH, FLOOR_LENGTH);
         floor.setLocalRotation(pitch90);
 
         //load a texture for the floor
@@ -131,7 +129,7 @@ public class TankGameState extends BasicGameState {
 
         rootNode.attachChild(floor);
         
-        Node walls = new Node("Walls");
+        walls = new Node("Walls");
 
         //load a texture for the walls
         TextureState wallTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
@@ -147,25 +145,25 @@ public class TankGameState extends BasicGameState {
         // The back wall does not need to be rotated. It defaults to vertical.
         Quad backWall = new Quad("Back Wall", FLOOR_WIDTH, WALL_HEIGHT);
         walls.attachChild(backWall);
-        backWall.setLocalTranslation(0, WALL_HEIGHT/2, FLOOR_HEIGHT/2);
+        backWall.setLocalTranslation(0, WALL_HEIGHT/2, FLOOR_LENGTH/2);
         backWall.setModelBound(new BoundingBox());
         backWall.updateModelBound();
 
         // The front wall does not need to be rotated. It defaults to vertical.
         Quad frontWall = new Quad("Front Wall", FLOOR_WIDTH, WALL_HEIGHT);
         walls.attachChild(frontWall);
-        frontWall.setLocalTranslation(0, WALL_HEIGHT/2, 0 - (FLOOR_HEIGHT/2));
+        frontWall.setLocalTranslation(0, WALL_HEIGHT/2, 0 - (FLOOR_LENGTH/2));
         frontWall.setModelBound(new BoundingBox());
         frontWall.updateModelBound();
 
-        Quad leftWall = new Quad("Left Wall", FLOOR_HEIGHT, WALL_HEIGHT);
+        Quad leftWall = new Quad("Left Wall", FLOOR_LENGTH, WALL_HEIGHT);
         walls.attachChild(leftWall);
         leftWall.setLocalRotation(yaw90);
         leftWall.setLocalTranslation(0-(FLOOR_WIDTH/2), WALL_HEIGHT/2, 0);
         leftWall.setModelBound(new BoundingBox());
         leftWall.updateModelBound();
 
-        Quad rightWall = new Quad("Right Wall", FLOOR_HEIGHT, WALL_HEIGHT);
+        Quad rightWall = new Quad("Right Wall", FLOOR_LENGTH, WALL_HEIGHT);
         walls.attachChild(rightWall);
         rightWall.setLocalRotation(yaw90);
         rightWall.setLocalTranslation((FLOOR_WIDTH/2), WALL_HEIGHT/2, 0);
@@ -191,7 +189,7 @@ public class TankGameState extends BasicGameState {
 
         //load a texture for the myTank
         TextureState tankTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        Texture tankTexture = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/tanktexture.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
+        Texture tankTexture = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("jmetest/data/texture/grassb.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
 
         tankTextureState.setTexture(tankTexture);
         tank.setRenderState(tankTextureState);
@@ -199,6 +197,8 @@ public class TankGameState extends BasicGameState {
         // Create a simple box that will be our myTank
         Box tankBox = new Box("TankBox", new Vector3f(0.0F, 5F, 0.0F), 5, 5, 5);
         tank.attachChild(tankBox);
+        tankBox.setModelBound(new BoundingBox());
+        tankBox.updateModelBound();
 
         // Now create a capsule that will be our gun
         Capsule tankGun = new Capsule("TankGun", 10, 10, 10, 1, 8);
@@ -210,9 +210,12 @@ public class TankGameState extends BasicGameState {
         tankGun.setLocalTranslation(0, 5, -8);
 
         tank.attachChild(tankGun);
-        tank.setModelBound(new BoundingBox());
+        tankGun.setModelBound(new BoundingBox());
+        tankGun.updateModelBound();
 
+        tank.setModelBound(new BoundingBox());
         tank.updateModelBound();
+        
         tank.updateWorldBound();
 
         return tank;
@@ -226,11 +229,10 @@ public class TankGameState extends BasicGameState {
         // See if there are any player location updates.
         updateRemotePlayerLocations();
 
+        logger.finer(myTank.getLocalTranslation().toString());
+
         // Keep the chase camera behaving itself :)
         chaseCamera.update(tpf);
-
-        //we want to keep the skybox around our eyes, so move it with the camera.
-        skybox.setLocalTranslation(cam.getLocation());
     }
 
 
@@ -259,30 +261,6 @@ public class TankGameState extends BasicGameState {
 
 
     /**
-     * A little unnecessary this, but I wanted to play around with skyboxes :)
-     */
-    private void createSkybox() {
-        skybox = new Skybox("skybox", 256, 256, 256);
-
-        Texture skyboxTextureNorth = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/north.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
-        Texture skyboxTextureSouth = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/south.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
-        Texture skyboxTextureEast = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/east.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
-        Texture skyboxTextureWest = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/west.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
-        Texture skyboxTextureUp = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/up.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
-        Texture skyboxTextureDown = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/down.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
-
-        skybox.setTexture(Skybox.Face.North, skyboxTextureNorth);
-        skybox.setTexture(Skybox.Face.South, skyboxTextureSouth);
-        skybox.setTexture(Skybox.Face.East, skyboxTextureEast);
-        skybox.setTexture(Skybox.Face.West, skyboxTextureWest);
-        skybox.setTexture(Skybox.Face.Up, skyboxTextureUp);
-        skybox.setTexture(Skybox.Face.Down, skyboxTextureDown);
-
-        rootNode.attachChild(skybox);
-    }
-
-
-    /**
      * Some simple lighting for our scene.
      */
     private void createLighting() {
@@ -304,7 +282,7 @@ public class TankGameState extends BasicGameState {
      * Sets up the controller for our tank.
      */
     private void addController() {
-        getRootNode().addController(new TankController(myTank));
+        getRootNode().addController(new TankController(myTank, walls));
     }
 
 
