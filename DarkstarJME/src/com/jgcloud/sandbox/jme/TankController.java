@@ -87,8 +87,6 @@ public class TankController extends Controller {
             DisplaySystem.getDisplaySystem().getRenderer().takeScreenShot("img-" + System.currentTimeMillis());
         }
 
-        node.updateWorldBound();
-        node.updateGeometricState(0, true);
         Vector3f origTranslation = node.getLocalTranslation().clone();
         Quaternion origRotation = node.getLocalRotation().clone();
 
@@ -99,7 +97,6 @@ public class TankController extends Controller {
         hAngle += turnAmount;
         newRotation.fromAngles(vAngle, hAngle, 0f);
         node.getLocalRotation().set(newRotation);
-        node.updateGeometricState(0, true);
 
         // I don't get this next line. What is getRotationColumn? value must be
         // between 0 and 2. I think 0=x, 1=y and 2=z... But I is baffled!
@@ -112,7 +109,7 @@ public class TankController extends Controller {
         node.getLocalTranslation().set(newLocation);
         node.updateGeometricState(0, true);
         
-        if (node.hasCollision(walls, true)) {
+        if (node.hasCollision(walls, false)) {
             node.getLocalTranslation().set(origTranslation);
             node.getLocalRotation().set(origRotation);
             hAngle -= turnAmount;
