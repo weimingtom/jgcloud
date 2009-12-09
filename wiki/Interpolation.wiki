@@ -4,7 +4,7 @@
 ==Introduction==
 This Wiki is a quick overview of how I implemented interpolation in to my project. For those that don't know what I'm talking about, interpolation is the process of working out where an object would be at a given point in time given a start point and an end point and a duration (at least this is my interpretation for my needs).
 
-In my DarkstarJMEIntegration, clients are sending their location every 100 milliseconds. If you have watched the tanks moving around the arena, you'll see that this looks very clunky. We could increase the frequency (in fact, for a LAN game you probably would), but when we're sending messages over greater distances via the internet, we may need to be more realistic about how often messages can be sent/received.
+In my [DarkstarJMEIntegration], clients are sending their location every 100 milliseconds. If you have watched the tanks moving around the arena, you'll see that this looks very clunky. We could increase the frequency (in fact, for a LAN game you probably would), but when we're sending messages over greater distances via the internet, we may need to be more realistic about how often messages can be sent/received.
 
 So, how do we sort this clunky movement out? Well, you've probably guessed. A technique called interpolation. If you know where you want the tank to be in (say) 100 milliseconds, and you know where it is now, then you can divide that distance up in to smaller points along the way. The same principal applies accross all three x, y and z axes. You just need to divide them up by time.
 
@@ -43,7 +43,7 @@ The same principal applies to `getCurrentRotation(...)` except the JME method is
 
 
 ===!TankGameState.updateRemotePlayerLocations()===
-So how do we implement this? well, it's pretty straightforward actually. Those that have gone through the DarkstarJMEIntegration wiki will see there's not much difference. 
+So how do we implement this? well, it's pretty straightforward actually. Those that have gone through the [DarkstarJMEIntegration] wiki will see there's not much difference. 
 
 `updateRemotePlayerLocations()` is called by the `TankGameState.update()` method every frame. The first thing it does is poll our playerDetails queue which gets updated via the `DarkstarUpdater` thread as and when new client locations arrive. This will contain an update of an existing players position, or potentially, a new players position. If it's a new player, then we update their Interpolator instance, setting their `startLocation/Rotation` to what we just received and time=_now_, also setting their `finishLocation/Rotation/Time` to the same thing (we're hoping a new update will arrive soon). If it's an existing player then we update their `startLocation/Rotation` to where they currently are on our arena, and the time=_now_. Their `finishLocation/Rotation` is set to the new value that's just arrived and the finishTime is set to _now+update_interval_ (eg 100 for 100ms). We also allow a bit more time in case theirs any latency. 
 
