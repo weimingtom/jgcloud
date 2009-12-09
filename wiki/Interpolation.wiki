@@ -1,4 +1,4 @@
-#Explanation of how I am implementing a very simple interpolation model in my project.
+#summary Explanation of how I am implementing a very simple interpolation model in my project.
 
 =Interpolation (or how to smooooth things out)=
 ==Introduction==
