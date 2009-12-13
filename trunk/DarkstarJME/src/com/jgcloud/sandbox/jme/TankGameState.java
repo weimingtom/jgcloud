@@ -317,6 +317,22 @@ public class TankGameState extends BasicGameState {
         getRootNode().addController(new TankController(myTank, walls));
     }
 
+    private void interpolateRemotePlayerLocations() {
+        for (String remotePlayer : remotePlayers.keySet()) {
+            Spatial remotePlayerTank = remotePlayersNode.getChild(remotePlayer);
+            // remotePlayerTank should not be null, but putting a check in
+            // here, just in case.
+            if (remotePlayerTank != null) {
+                Interpolator dr = remotePlayers.get(remotePlayer);
+                remotePlayerTank.setLocalTranslation(dr.getCurrentTranslation());
+                remotePlayerTank.setLocalRotation(dr.getCurrentRotation());
+            } else {
+                // Like I say, we should never get here.
+                logger.severe("Player " + remotePlayer + " exists in remotPlayers but is not in remotePlayersNode");
+            }
+        }
+    }
+
 
     /**
      * Poll the DarkstarUpdater.playerDetailsQueue for any new PlayerDetails
@@ -372,20 +388,7 @@ public class TankGameState extends BasicGameState {
         // Right, with our Interpolation out of the way, we can loop through
         // the players in our map, and calculate their new interpolated
         // positions.
-        for (String remotePlayer : remotePlayers.keySet()) {
-            Spatial remotePlayerTank = remotePlayersNode.getChild(remotePlayer);
-
-            // remotePlayerTank should not be null, but putting a check in
-            // here, just in case.
-            if (remotePlayerTank != null) {
-                Interpolator dr = remotePlayers.get(remotePlayer);
-                remotePlayerTank.setLocalTranslation(dr.getCurrentTranslation());
-                remotePlayerTank.setLocalRotation(dr.getCurrentRotation());
-            } else {
-                // Like I say, we should never get here.
-                logger.severe("Player " + remotePlayer + " exists in remotPlayers but is not in remotePlayersNode");
-            }
-        }
+        interpolateRemotePlayerLocations();
     }
 
     /**
