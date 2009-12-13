@@ -11,7 +11,7 @@ public class DarkstarConstants {
      */
     private DarkstarConstants() { }
 
-    public static final String DARKSTAR_SERVER_HOST = "192.168.1.102";
+    public static final String DARKSTAR_SERVER_HOST = "192.168.1.123";
     public static final String DARKSTAR_SERVER_PORT = "1139";
 
     public static final String MESSAGE_CHARSET = "UTF-8";
