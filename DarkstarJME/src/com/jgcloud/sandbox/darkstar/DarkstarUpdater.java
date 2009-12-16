@@ -150,6 +150,7 @@ public class DarkstarUpdater implements Runnable, SimpleClientListener, ClientCh
         }
     }
 
+
     /**
      * This is the thread that will update the server every 100ms (we hope) with
      * this players location and rotation.
