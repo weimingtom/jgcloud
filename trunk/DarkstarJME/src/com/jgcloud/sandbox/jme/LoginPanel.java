@@ -39,14 +39,24 @@ public class LoginPanel extends javax.swing.JPanel {
         passwordField = new javax.swing.JPasswordField();
         loginButton = new javax.swing.JButton();
 
-        setBackground(new java.awt.Color(204, 0, 51));
+        setBackground(new java.awt.Color(0, 0, 0));
+        setForeground(new java.awt.Color(255, 255, 255));
 
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Server:");
 
-        serverComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        serverComboBox.setEditable(true);
+        serverComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "localhost", "127.0.0.1" }));
+        serverComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                serverComboBoxActionPerformed(evt);
+            }
+        });
 
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Username:");
 
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Password:");
 
         loginButton.setBackground(new java.awt.Color(204, 0, 0));
@@ -92,6 +102,10 @@ public class LoginPanel extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void serverComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_serverComboBoxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

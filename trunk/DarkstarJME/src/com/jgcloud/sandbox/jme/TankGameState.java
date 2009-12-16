@@ -94,10 +94,10 @@ public class TankGameState extends BasicGameState {
      * visible for us.
      */
     protected void init() {
+        createSkybox();
         createArena();
         createMyTank();
         createChaseCamera();
-        createSkybox();
         createLighting();
         addController();
         createRemotePlayersNode();
@@ -272,7 +272,7 @@ public class TankGameState extends BasicGameState {
      * A little unnecessary this, but I wanted to play around with skyboxes :)
      */
     private void createSkybox() {
-        skybox = new Skybox("skybox", 512, 512, 512);
+        skybox = new Skybox("skybox", 10, 10, 10);
 
         Texture skyboxTextureNorth = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/north.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
         Texture skyboxTextureSouth = TextureManager.loadTexture(TankGameState.class.getClassLoader().getResource("images/south.png"), Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
@@ -288,7 +288,7 @@ public class TankGameState extends BasicGameState {
         skybox.setTexture(Skybox.Face.Up, skyboxTextureUp);
         skybox.setTexture(Skybox.Face.Down, skyboxTextureDown);
 
-        rootNode.attachChild(skybox);
+        rootNode.attachChildAt(skybox, 0);
     }
 
 
