@@ -3,8 +3,10 @@ package worldeditor;
 import com.jme.app.SimpleGame;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.MouseInput;
+import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.shape.*;
+import com.jme.system.canvas.JMECanvas;
 
 public class SimpleTest extends SimpleGame implements worldeditor.InspectableGame {
 
@@ -26,6 +28,9 @@ public class SimpleTest extends SimpleGame implements worldeditor.InspectableGam
 
         rootNode.attachChild(t);
         rootNode.attachChild(s);
+
+        display.getRenderer().setBackgroundColor( new ColorRGBA(0f, 0.5f, 1f, 1f) );
+        JMECanvas jc;
 
         rootNode.updateRenderState();
     }
