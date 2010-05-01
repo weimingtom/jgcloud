@@ -43,7 +43,6 @@ public class SceneTreePanel extends javax.swing.JPanel {
             DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(spatial);
             parentNode.add(childNode);
 
-
             if (spatial instanceof Node) {
 //                parentNode.add(new DefaultMutableTreeNode(childNode));
                 childNode.add(buildTree((Node)spatial));
