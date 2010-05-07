@@ -59,7 +59,7 @@ public class TestGameState extends BasicGameState implements InspectableGame {
         standardGame.getSettings().setWidth(640);
         standardGame.getSettings().setHeight(480);
         standardGame.getSettings().setFullscreen(false);
-        standardGame.getSettings().setSamples(8);
+        standardGame.getSettings().setSamples(0);
         standardGame.start();
 
         GameState client = new TestGameState();
@@ -69,8 +69,8 @@ public class TestGameState extends BasicGameState implements InspectableGame {
 
     public TestGameState() {
         super("Test Game State");
-        WorldEditorFrame.runWorldEditorFrame(this);
         init();
+        WorldEditorFrame.runWorldEditorFrame(this);
     }
 
     private void init() {
@@ -82,8 +82,8 @@ public class TestGameState extends BasicGameState implements InspectableGame {
     }
 
     private void loadSceneObjects() {
-        loadSceneObject(new File("E:/Blender Work/castle/castle-jme.xml"), Vector3f.ZERO, 15f);
-        loadSceneObject(new File("E:/Blender Work/catapult/catapult-jme.xml"), new Vector3f(68.0f, -72.4f, -165f), 5f);
+        loadSceneObject(new File("/Blender Work/castle/castle-jme.xml"), Vector3f.ZERO, 15f);
+        loadSceneObject(new File("/Blender Work/catapult/catapult-jme.xml"), new Vector3f(68.0f, -72.4f, -165f), 5f);
     }
 
     private void loadSceneObject(File xmlFile, Vector3f translation, float scale) {
@@ -105,7 +105,7 @@ public class TestGameState extends BasicGameState implements InspectableGame {
     }
 
     private void createCharacter() {
-        character = new Box("character-cube", new Vector3f(), 2f, 2f, 2f);
+        character = new Box("character-cube", new Vector3f(), 1f, 1f, 1f);
         character.setModelBound(new BoundingBox());
         character.updateModelBound();
         getRootNode().attachChild(character);
@@ -116,26 +116,24 @@ public class TestGameState extends BasicGameState implements InspectableGame {
         skybox = new Skybox("skybox", 100, 100, 100);
 
         try {
-            URL skyboxFileNorth = new File("images/north.png").toURI().toURL();
-            URL skyboxFileSouth = new File("images/south.png").toURI().toURL();
-            URL skyboxFileEast = new File("images/east.png").toURI().toURL();
-            URL skyboxFileWest = new File("images/west.png").toURI().toURL();
-            URL skyboxFileUp = new File("images/up.png").toURI().toURL();
-            URL skyboxFileDown = new File("images/down.png").toURI().toURL();
+            URL skyboxFileNorth = new File("images/negz.jpg").toURI().toURL();
+            URL skyboxFileSouth = new File("images/posz.jpg").toURI().toURL();
+            URL skyboxFileEast = new File("images/negx.jpg").toURI().toURL();
+            URL skyboxFileWest = new File("images/posx.jpg").toURI().toURL();
+            URL skyboxFileUp = new File("images/posy.jpg").toURI().toURL();
+            // No skyboxFileDown... Guess the intention is that you create the floor. Makes sense.
 
             Texture skyboxTextureNorth = TextureManager.loadTexture(skyboxFileNorth, Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
             Texture skyboxTextureSouth = TextureManager.loadTexture(skyboxFileSouth, Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
             Texture skyboxTextureEast = TextureManager.loadTexture(skyboxFileEast, Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
             Texture skyboxTextureWest = TextureManager.loadTexture(skyboxFileWest, Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
             Texture skyboxTextureUp = TextureManager.loadTexture(skyboxFileUp, Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
-            Texture skyboxTextureDown = TextureManager.loadTexture(skyboxFileDown, Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
 
             skybox.setTexture(Skybox.Face.North, skyboxTextureNorth);
             skybox.setTexture(Skybox.Face.South, skyboxTextureSouth);
             skybox.setTexture(Skybox.Face.East, skyboxTextureEast);
             skybox.setTexture(Skybox.Face.West, skyboxTextureWest);
             skybox.setTexture(Skybox.Face.Up, skyboxTextureUp);
-            skybox.setTexture(Skybox.Face.Down, skyboxTextureDown);
 
             rootNode.attachChildAt(skybox, 0);
             rootNode.updateRenderState();
@@ -174,7 +172,7 @@ public class TestGameState extends BasicGameState implements InspectableGame {
         super.update(tpf);
         handleKeyInput(tpf);
         collisionCheck(tpf);
-        rayCheck(tpf);
+//        rayCheck(tpf);
         chaseCamera.update(tpf);
         skybox.setLocalTranslation(chaseCamera.getCamera().getLocation());
     }
@@ -273,11 +271,12 @@ public class TestGameState extends BasicGameState implements InspectableGame {
             CollisionData collisionData = collisionResults.getCollisionData(i);
             Geometry targetMesh = collisionData.getTargetMesh();
             
-            if (targetMesh instanceof QuadMesh) {
-                logger.severe("Geometry '" + targetMesh.getName() + "' is of type QuadMesh. It should be a TriMesh. In Blender: Select Object -> Edit -> Select All (A) - Convert to Triangles (Ctrl+T)");
-            } else if (targetMesh instanceof TriMesh) {
+            if (targetMesh instanceof TriMesh) {
                 maxY = getMaxTriangleYValue((TriMesh) targetMesh, collisionData.getTargetTris(), maxY);
-            } 
+            } else {
+                logger.severe("Geometry '" + targetMesh.getName() + "' is of type " + targetMesh.getClass() + ". It should be a TriMesh. In Blender: Select Object -> Edit -> Select All (A) - Convert to Triangles (Ctrl+T)");
+                return;
+            }
 
             if (maxY < 100) {
                 character.getLocalTranslation().setY(maxY);
